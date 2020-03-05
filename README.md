@@ -59,11 +59,10 @@ $details = new \Trunkrs\SDK\ShipmentDetails();
 $details->reference = "your-shipment-reference";
 
 $pickupAddress = new \Trunkrs\SDK\Address();
-// Set your pickup address properties.
+// Set the pickup address properties.
 
 $deliveryAddress = new \Trunkrs\SDK\Address();
-// Set your delivery address properties.
-
+// Set the delivery address properties.
 
 $shipments = \Trunkrs\SDK\Shipment::create($details, $pickupAddress, $deliveryAddress);
 ```
@@ -75,7 +74,7 @@ The method will in that case return a unique `Shipment` instance and label for e
 
 ### Retrieve shipment details
 
-A single shipment details can be retrieved through its identifier by calling the `Shipment::find($id)` method.
+Details for a single shipment can be retrieved through its identifier by calling the `Shipment::find($id)` method.
 
 ```php
 $shipment = \Trunkrs\SDK\Shipment::find(100);
@@ -83,7 +82,7 @@ $shipment = \Trunkrs\SDK\Shipment::find(100);
 
 ### Retrieve shipment history
 
-Your shipments can be listed in a paginated manner by using the `Shipment::retrieve($page)` method.
+Your shipment history can be listed in a paginated manner by using the `Shipment::retrieve($page)` method.
 Every returned page contains a maximum of 50 shipments.
 
 ```php
