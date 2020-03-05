@@ -23,7 +23,7 @@ class Webhook {
      * @throws Exception\NotAuthorizedException
      * @throws Exception\ServerValidationException
      */
-    public function create(Webhook $webhook) {
+    public static function register(Webhook $webhook) {
         switch (Settings::$apiVersion) {
             case 1:
                 RequestHandler::post("webhooks", self::toV1Request($webhook));

@@ -2,6 +2,9 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Exception\GeneralApiException;
+use Trunkrs\SDK\Exception\ShipmentNotFoundException;
+
 /**
  * Class Shipment
  */
@@ -19,9 +22,9 @@ class Shipment {
     /**
      * Creates a new shipment for the specified shipment details.
      *
+     * @param ShipmentDetails $details The details of the shipment.
      * @param Address $pickup The pickup address for the shipment.
      * @param Address $delivery The delivery address for the shipment.
-     * @param ShipmentDetails $details The details of the shipment.
      * @param int $timeslotId An optional timeslot, if not specified will be placed in next available.
      * @return array The created shipments in an array as instance of Shipment.
      * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
@@ -29,9 +32,9 @@ class Shipment {
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
     public static function create(
+        ShipmentDetails $details,
         Address $pickup,
         Address $delivery,
-        ShipmentDetails $details,
         int $timeslotId = -1
     ): array {
         $body = [];
@@ -57,6 +60,28 @@ class Shipment {
         return array_map(function ($result) {
             return new Shipment($result);
         }, $jsonResult);
+    }
+
+    /**
+     * Find the details for the specified shipment by its identifier.
+     *
+     * @param int $shipmentId The shipment identifier.
+     * @return Shipment A shipment instance.
+     * @throws ShipmentNotFoundException When the specified shipment couldn't be found.
+     * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
+     * @throws GeneralApiException When the API responds with an unexpected answer.
+     */
+    public static function find($shipmentId): Shipment {
+        try {
+            $json = RequestHandler::get(sprintf("shipments/%d", $shipmentId));
+            return new Shipment($json);
+        } catch (GeneralApiException $exception) {
+            $isShipmentNotFound = $exception->getStatusCode() == 404;
+            if ($isShipmentNotFound)  {
+                throw new ShipmentNotFoundException($shipmentId);
+            }
+            throw $exception;
+        }
     }
 
     /**
