@@ -1,5 +1,8 @@
 # Trunkrs SDK for PHP
 
+[![Latest Stable Version](https://poser.pugx.org/trunkrs/sdk/version)](https://packagist.org/packages/trunkrs/sdk)
+[![License](https://poser.pugx.org/trunkrs/sdk/license)](https://packagist.org/packages/trunkrs/sdk)
+
 The Trunkrs software development kit for the public client SDK. With this PHP SDK you can manage your shipments, shipment states and webhooks within our system.
 
 ## Requirements
