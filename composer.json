@@ -1,0 +1,28 @@
+{
+  "name": "trunkrs/sdk",
+  "version": "1.0.0",
+  "description": "Trunkrs Client SDK",
+  "keywords": [
+    "trunkrs",
+    "logistics",
+    "api"
+  ],
+  "homepage": "https://trunkrs.nl/",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Trunkrs B.V.",
+      "homepage": "https://trunkrs.nl"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0",
+    "guzzlehttp/guzzle": "6.5.2",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Trunkrs\\SDK\\": "lib/"
+    }
+  }
+}
