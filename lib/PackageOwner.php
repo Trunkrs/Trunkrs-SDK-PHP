@@ -6,7 +6,7 @@ namespace Trunkrs\SDK;
  * Class PackageOwner
  */
 class PackageOwner {
-    public static function applyV1(PackageOwner $owner, array $json) {
+    private static function applyV1(PackageOwner $owner, array $json) {
         $owner->type = $json['type'];
         $owner->name = $json['name'];
         $owner->addressLine = $json['address'];
