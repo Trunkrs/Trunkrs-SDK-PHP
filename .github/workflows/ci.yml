@@ -1,6 +1,6 @@
 on: ["push", "pull_request"]
 
-name: Tests & Coveralls
+name: CI
 
 jobs:
   test:
@@ -12,6 +12,11 @@ jobs:
       uses: php-actions/composer@v1
     - name: Run Tests
       uses: php-actions/phpunit@v1
+      with:
+        config: phpunit.dist.xml
     - name: Upload coverage
       uses: coverallsapp/github-action@v1.0.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage/clover.xml
 
