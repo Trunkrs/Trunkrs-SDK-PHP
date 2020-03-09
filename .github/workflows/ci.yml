@@ -13,7 +13,7 @@ jobs:
       uses: php-actions/composer@v1
     - name: Run tests
       run: |
-        phpunit --configuration --configuration ./phpunit.dist.xml
+        phpunit --configuration ./phpunit.dist.xml
     - name: Upload coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
