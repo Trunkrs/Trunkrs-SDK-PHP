@@ -19,6 +19,5 @@ jobs:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         apk add --no-cache php7-simplexml
-        composer global require cedx/coveralls
-        php vendor/bin/coveralls
+        php vendor/bin/coveralls coverage/clover.xml
 
