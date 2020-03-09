@@ -1,4 +1,4 @@
-on: [push, pull_request]
+on: [push]
 
 name: CI
 
@@ -15,6 +15,7 @@ jobs:
       run: |
         phpunit --configuration ./phpunit.dist.xml
     - name: Upload coverage
+      if: github.ref == 'refs/heads/master'
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.CoverallsRepoToken }}
       run: |
