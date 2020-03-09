@@ -8,9 +8,9 @@ use Trunkrs\SDK\Util\JsonDateTime;
  * Class TimeSlotWindow
  */
 class TimeWindow {
-    private static function applyV1(TimeWindow $window, array $json) {
-        $window->from = JsonDateTime::from($json['from']);
-        $window->to = JsonDateTime::from($json['to']);
+    private static function applyV1(TimeWindow $window, $json) {
+        $window->from = JsonDateTime::from($json->from);
+        $window->to = JsonDateTime::from($json->to);
     }
 
     /**

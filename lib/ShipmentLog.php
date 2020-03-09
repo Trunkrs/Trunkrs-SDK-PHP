@@ -6,12 +6,12 @@ namespace Trunkrs\SDK;
  * Class ShipmentLog
  */
 class ShipmentLog {
-    private static function applyV1(ShipmentLog $log, array $json) {
-        $log->id = $json['id'];
-        $log->label = $json['label'];
-        $log->name = $json['name'];
-        $log->description = $json['status'];
-        $log->reason = $json['reasonCode'];
+    private static function applyV1(ShipmentLog $log, $json) {
+        $log->id = $json->id;
+        $log->label = $json->label;
+        $log->name = $json->name;
+        $log->description = $json->status;
+        $log->reason = $json->reasonCode;
     }
 
     /**

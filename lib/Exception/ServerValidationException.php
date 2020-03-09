@@ -9,13 +9,17 @@ class ServerValidationException extends \Exception {
 
     public function __construct(array $response)
     {
-        $json = json_decode($response['body']);
+        $json = array_key_exists("body", $response)
+            ? json_decode($response["body"])
+            : null;
+
+        $this->_message = $json
+            ? $json->message
+            : "No error message specified.";
 
         parent::__construct(
-            sprintf("Your payload did not match the expectation of the Trunkrs API\n\nValidation: %s", $json['message'])
+            sprintf("Your payload did not match the expectation of the Trunkrs API\n\nValidation: %s", $this->_message)
         );
-
-        $this->_message = $json['message'];
     }
 
     public function getValidationMessage(): string {

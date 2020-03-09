@@ -3,15 +3,15 @@
 namespace Trunkrs\SDK;
 
 class Address {
-    private static function applyV1(Address $address, array $json) {
-        $address->contactName = $json['name'];
-        $address->addressLine = $json['address'];
-        $address->postal = $json['postCode'];
-        $address->city = $json['city'];
-        $address->country = $json['country'];
-        $address->phone = $json['phoneNumber'];
-        $address->email = $json['email'];
-        $address->remarks = $json['remarks'];
+    private static function applyV1(Address $address, $json) {
+        $address->contactName = $json->name;
+        $address->addressLine = $json->address;
+        $address->postal = $json->postCode;
+        $address->city = $json->city;
+        $address->country = $json->country;
+        $address->phone = $json->phoneNumber;
+        $address->email = $json->email;
+        $address->remarks = $json->remarks;
     }
 
     private static function toV1Request(string $prefix, Address $address): array {
@@ -74,7 +74,7 @@ class Address {
      * Address constructor.
      * @param array|null $json An optional associative array for parsing the timeslot.
      */
-    public function __construct(array $json = null)
+    public function __construct($json = null)
     {
         if ($json) {
             switch (Settings::$apiVersion) {

@@ -10,12 +10,12 @@ use Trunkrs\SDK\Util\JsonDateTime;
  * Class ShipmentState
  */
 class ShipmentState {
-    private static function applyV1(ShipmentState $state, array $json) {
-        $state->shipmentId = $json['shipmentId'];
-        $state->timestamp = JsonDateTime::from($json['timestamp']);
+    private static function applyV1(ShipmentState $state, $json) {
+        $state->shipmentId = $json->shipmentId;
+        $state->timestamp = JsonDateTime::from($json->timestamp);
 
-        $state->owner = new ShipmentLog($json['stateObj']);
-        $state->state = new PackageOwner($json['currentOwner']);
+        $state->owner = new ShipmentLog($json->stateObj);
+        $state->state = new PackageOwner($json->currentOwner);
     }
 
     /**

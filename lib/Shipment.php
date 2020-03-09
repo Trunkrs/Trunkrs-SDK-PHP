@@ -9,14 +9,14 @@ use Trunkrs\SDK\Exception\ShipmentNotFoundException;
  * Class Shipment
  */
 class Shipment {
-    private static function applyV1(Shipment $shipment, array $json) {
-        $shipment->id = $json['shipmentId'];
-        $shipment->trunkrsNr = $json['trunkrsNr'];
-        $shipment->labelUrl = $json['label'];
+    private static function applyV1(Shipment $shipment, $json) {
+        $shipment->id = $json->shipmentId;
+        $shipment->trunkrsNr = $json->trunkrsNr;
+        $shipment->labelUrl = $json->label;
 
-        $shipment->pickupAddress = new Address($json['sender']);
-        $shipment->deliveryAddress = new Address($json['recipient']);
-        $shipment->timeSlot = new TimeSlot($json['timeSlot']);
+        $shipment->pickupAddress = new Address($json->sender);
+        $shipment->deliveryAddress = new Address($json->recipient);
+        $shipment->timeSlot = new TimeSlot($json->timeSlot);
     }
 
     /**

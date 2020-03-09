@@ -34,7 +34,9 @@ class RequestHandler {
     }
 
     private static function handleSuccess(array $response) {
-        return json_decode($response['body']);
+        return array_key_exists("body", $response)
+            ? json_decode($response["body"])
+            : null;
     }
 
     private static function handleFailure(array $response) {

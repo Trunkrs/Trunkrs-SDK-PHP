@@ -8,13 +8,13 @@ use Trunkrs\SDK\Util\JsonDateTime;
  * Class TimeSlot
  */
 class TimeSlot {
-    private static function applyV1(TimeSlot $timeSlot, array $json) {
-        $timeSlot->id = $json['id'];
-        $timeSlot->dataCutOff = JsonDateTime::from($json['dataWindow']);
-        $timeSlot->senderId = $json['senderId'];
+    private static function applyV1(TimeSlot $timeSlot, $json) {
+        $timeSlot->id = $json->id;
+        $timeSlot->dataCutOff = JsonDateTime::from($json->dataWindow);
+        $timeSlot->senderId = $json->senderId;
 
-        $timeSlot->deliveryWindow = new TimeWindow($json['deliveryWindow']);
-        $timeSlot->collectionWindow = new TimeWindow($json['collectionWindow']);
+        $timeSlot->deliveryWindow = new TimeWindow($json->deliveryWindow);
+        $timeSlot->collectionWindow = new TimeWindow($json->collectionWindow);
     }
 
     /**
