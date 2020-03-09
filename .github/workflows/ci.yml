@@ -1,19 +1,19 @@
-on: ["push", "pull_request"]
+on: [push, pull_request]
 
 name: CI
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    container: phpunit/phpunit:6.5.2
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
     - name: Install Dependencies
       uses: php-actions/composer@v1
-    - name: Run Tests
-      uses: php-actions/phpunit@v1
-      with:
-        config: phpunit.dist.xml
+    - name: Run tests
+      run: |
+        phpunit --configuration --configuration ./phpunit.dist.xml
     - name: Upload coverage
       uses: coverallsapp/github-action@v1.0.1
       with:
