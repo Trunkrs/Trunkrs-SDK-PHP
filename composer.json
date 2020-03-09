@@ -1,6 +1,5 @@
 {
   "name": "trunkrs/sdk",
-  "version": "1.0.0",
   "description": "Trunkrs Client SDK",
   "keywords": [
     "trunkrs",
@@ -24,5 +23,17 @@
     "psr-4": {
       "Trunkrs\\SDK\\": "lib/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Trunkrs\\SDK\\": [
+        "tests/",
+        "tests/SDK/"
+      ]
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6",
+    "php-coveralls/php-coveralls": "^2.1"
   }
 }

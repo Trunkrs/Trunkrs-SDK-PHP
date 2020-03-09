@@ -1,5 +1,6 @@
 # Trunkrs SDK for PHP
 
+![CI](https://github.com/Trunkrs/Trunkrs-SDK-PHP/workflows/CI/badge.svg?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/trunkrs/sdk/version)](https://packagist.org/packages/trunkrs/sdk)
 [![License](https://poser.pugx.org/trunkrs/sdk/license)](https://packagist.org/packages/trunkrs/sdk)
 

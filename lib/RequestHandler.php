@@ -16,7 +16,7 @@ class RequestHandler {
     private static function createHeaders(bool $withBody): array {
         $headers = [
             "User-Agent" => sprintf("Trunkrs SDK/PHP/v%s", Settings::$sdkVersion),
-            "X-API-ClientID" => Settings::$clientId,
+            "X-API-ClientId" => Settings::$clientId,
             "X-API-ClientSecret" => Settings::$clientSecret,
             "Accept" => "application/json; charset=utf-8",
         ];
@@ -33,7 +33,7 @@ class RequestHandler {
         return $statusCode >= 200 && $statusCode <= 204;
     }
 
-    private static function handleSuccess(array $response): array {
+    private static function handleSuccess(array $response) {
         return json_decode($response['body']);
     }
 
@@ -53,11 +53,11 @@ class RequestHandler {
      *
      * @param string $resource The resource to retrieve.
      * @param array $query Optional query parameters.
-     * @return array JSON result as associative array.
+     * @return object JSON result as associative array.
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws GeneralApiException When the API responds with an unexpected answer.
      */
-    public static function get(string $resource, array $query = []): array {
+    public static function get(string $resource, array $query = []) {
         $response = self::getClient()->request(
             "GET",
             self::createUrl($resource),
@@ -76,12 +76,12 @@ class RequestHandler {
      *
      * @param string $resource The resource to create.
      * @param array $body Associative array as the body.
-     * @return array JSON result as associative array.
+     * @return object JSON result as associative array.
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws ServerValidationException When the request payload doesn't match the expectation of the API.
      * @throws GeneralApiException When the API responds with an unexpected answer.
      */
-    public static function post(string $resource, array $body): array {
+    public static function post(string $resource, array $body) {
         $response = self::getClient()->request(
             "POST",
             self::createUrl($resource),
@@ -100,12 +100,12 @@ class RequestHandler {
      *
      * @param string $resource The resource to execute PUT on.
      * @param array $body A optional associative array as the request body.
-     * @return array JSON result as associative array.
+     * @return object JSON result as associative array.
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws ServerValidationException When the request payload doesn't match the expectation of the API.
      * @throws GeneralApiException When the API responds with an unexpected answer.
      */
-    public static function put(string $resource, array $body = []): array {
+    public static function put(string $resource, array $body = []) {
         $response = self::getClient()->request(
             "PUT",
             self::createUrl($resource),
@@ -124,11 +124,11 @@ class RequestHandler {
      *
      * @param string $resource The resource to execute delete on.
      * @param array $query A optional associative array as the query parameters.
-     * @return array JSON result as associative array.
+     * @return object JSON result as associative array.
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws GeneralApiException When the API responds with an unexpected answer.
      */
-    public static function delete(string $resource, array $query = []): array {
+    public static function delete(string $resource, array $query = []) {
         $response = self::getClient()->request(
             "DELETE",
             self::createUrl($resource),
