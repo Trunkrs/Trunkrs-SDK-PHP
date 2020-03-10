@@ -15,7 +15,7 @@ class ServerValidationException extends \Exception {
 
         $this->_message = $json
             ? $json->message
-            : "No error message specified.";
+            : "No validation message specified.";
 
         parent::__construct(
             sprintf("Your payload did not match the expectation of the Trunkrs API\n\nValidation: %s", $this->_message)

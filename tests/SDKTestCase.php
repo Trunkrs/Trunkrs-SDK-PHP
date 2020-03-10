@@ -16,7 +16,7 @@ abstract class SDKTestCase extends TestCase {
         RequestHandler::setHttpClient($this->mockClient);
     }
 
-    protected function mockResponse(int $status, array $body = [], array $headers = []) {
+    protected function mockResponse(int $status, $body = null, array $headers = []) {
         $this->mockClient->method("request")->will($this->returnValue([
             "status" => $status,
             "body" => json_encode($body),
