@@ -62,7 +62,7 @@ class TimeSlot {
      * TimeSlot constructor.
      * @param array|null $json An optional associative array for parsing the timeslot.
      */
-    public function __construct(array $json = null) {
+    public function __construct($json = null) {
         if ($json) {
             switch (Settings::$apiVersion) {
                 case 1:

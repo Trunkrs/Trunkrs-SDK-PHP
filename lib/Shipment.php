@@ -108,7 +108,15 @@ class Shipment {
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
     public static function cancelById(int $id) {
-        RequestHandler::delete(sprintf('shipments/%d', $id));
+        try {
+            RequestHandler::delete(sprintf('shipments/%d', $id));
+        } catch (GeneralApiException $exception) {
+            $isShipmentNotFound = $exception->getStatusCode() == 404;
+            if ($isShipmentNotFound)  {
+                throw new ShipmentNotFoundException($id);
+            }
+            throw $exception;
+        }
     }
 
     /**
@@ -146,7 +154,7 @@ class Shipment {
      *
      * @param array|null $json Optional associative array to decode shipment from.
      */
-    public function __construct(array $json = null) {
+    public function __construct($json = null) {
         if ($json) {
             switch (Settings::$apiVersion) {
                 case 1:

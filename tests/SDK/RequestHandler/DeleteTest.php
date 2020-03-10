@@ -5,15 +5,15 @@ namespace Trunkrs\SDK;
 use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\NotAuthorizedException;
 
-class GetTest extends SDKTestCase {
+class DeleteTest extends SDKTestCase {
     public function testEmitsGetMethodRequest() {
         $this->mockResponseCallback(function($method) {
-            $this->assertEquals("GET", $method);
+            $this->assertEquals("DELETE", $method);
 
             return ["status" => 200];
         });
 
-        RequestHandler::get("shipments");
+        RequestHandler::delete("shipments");
     }
 
     public function testPassesQueryStringAsParams() {
@@ -27,13 +27,13 @@ class GetTest extends SDKTestCase {
             return ["status" => 200];
         });
 
-        RequestHandler::get("shipments", $body);
+        RequestHandler::delete("shipments", $body);
     }
 
     public function testExtractsJsonBodyFromSuccessfulRequest() {
         $this->mockResponse(200, ["success" => true]);
 
-        $result = RequestHandler::get("shipment");
+        $result = RequestHandler::delete("shipment");
 
         self::assertTrue($result->success);
     }
@@ -45,20 +45,20 @@ class GetTest extends SDKTestCase {
             return ["status" => 200];
         });
 
-        RequestHandler::get("shipments");
+        RequestHandler::delete("shipments");
     }
 
     public function testThrowsWhenNotAuthorized() {
         $this->mockResponse(401);
         $this-> expectException(NotAuthorizedException::class);
 
-        RequestHandler::get("shipments");
+        RequestHandler::delete("shipments");
     }
 
     public function testThrowsWhenServerError() {
         $this->mockResponse(500, ["message" => "Whoops!"]);
         $this->expectException(GeneralApiException::class);
 
-        RequestHandler::get("shipments");
+        RequestHandler::delete("shipments");
     }
 }

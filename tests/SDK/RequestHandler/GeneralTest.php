@@ -2,6 +2,7 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Exception\ServerValidationException;
 use Trunkrs\SDK\HTTP\HttpClientInterface;
 
 class GeneralTest extends SDKTestCase {
@@ -44,5 +45,16 @@ class GeneralTest extends SDKTestCase {
         RequestHandler::get("shipments");
     }
 
+    public function testApiValidationMessageInException() {
+        $message = uniqid();
+        $this->mockResponse(422, [
+            'message' => $message,
+        ]);
 
+        try {
+            RequestHandler::post("shipments", []);
+        } catch (ServerValidationException $exception) {
+            $this->assertEquals($message, $exception->getValidationMessage());
+        }
+    }
 }
