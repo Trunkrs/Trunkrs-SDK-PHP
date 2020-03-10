@@ -105,6 +105,15 @@ class Mocks {
         return $timeSlot;
     }
 
+    public static function getFakeWebhook(): Webhook {
+        $webhook = new Webhook();
+        $webhook->callbackUrl = self::getGenerator()->url;
+        $webhook->sessionToken = uniqid();
+        $webhook->sessionHeaderName = uniqid();
+
+        return $webhook;
+    }
+
     public static function getTrunkrsNr(): string {
         return self::getGenerator()->numberBetween(400000000, 500000000);
     }
