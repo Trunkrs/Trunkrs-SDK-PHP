@@ -31,7 +31,7 @@ class ShipmentV1CreateTest extends APIV1TestCase {
             return [
                 "status" => 200,
                 "headers" => [],
-                "body" => json_encode(Mocks::getFakeShipmentBody(
+                "body" => json_encode(MockV1Responses::getFakeShipmentBody(
                     $this->shipmentId,
                     $this->trunkrsNr,
                     $this->labelUrl,
@@ -45,7 +45,8 @@ class ShipmentV1CreateTest extends APIV1TestCase {
     }
 
     public function testShouldCreateAV1Shipment() {
-        $this->mockResponseCallback(function ($method, $url, $headers, $params) {
+        $timeSlotId = Mocks::getGenerator()->randomNumber();
+        $this->mockResponseCallback(function ($method, $url, $headers, $params) use ($timeSlotId) {
             $this->assertArraySubset([
                 "orderReference" => $this->details->reference,
                 "weight" => $this->details->weight,
@@ -72,12 +73,13 @@ class ShipmentV1CreateTest extends APIV1TestCase {
                 "deliveryEmail" => $this->deliveryAddress->email,
                 "deliveryTell" => $this->deliveryAddress->phone,
                 "deliveryRemarks" => $this->deliveryAddress->remarks,
+                "timeslotId" => $timeSlotId,
             ], $params);
 
             return [
                 "status" => 200,
                 "headers" => [],
-                "body" => json_encode(Mocks::getFakeShipmentBody(
+                "body" => json_encode(MockV1Responses::getFakeShipmentBody(
                     $this->shipmentId,
                     $this->trunkrsNr,
                     $this->labelUrl,
@@ -90,7 +92,8 @@ class ShipmentV1CreateTest extends APIV1TestCase {
         $shipmentResult = Shipment::create(
             $this->details,
             $this->pickupAddress,
-            $this->deliveryAddress
+            $this->deliveryAddress,
+            $timeSlotId
         );
 
         $this->assertCount(1, $shipmentResult);

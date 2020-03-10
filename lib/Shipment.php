@@ -45,7 +45,7 @@ class Shipment {
                     $delivery->serialize('delivery'),
                     $details->serialize()
                 );
-                if ($timeslotId > 0) {
+                if ($timeslotId !== -1) {
                     $body['timeslotId'] = $timeslotId;
                 }
 

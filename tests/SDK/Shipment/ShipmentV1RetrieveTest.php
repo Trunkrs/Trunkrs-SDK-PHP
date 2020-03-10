@@ -9,7 +9,7 @@ class ShipmentV1RetrieveTest extends APIV1TestCase {
 
             return [
                 "status" => 200,
-                "body" => json_encode([Mocks::getFakeShipmentBody()])
+                "body" => json_encode([MockV1Responses::getFakeShipmentBody()])
             ];
         });
 
@@ -17,7 +17,7 @@ class ShipmentV1RetrieveTest extends APIV1TestCase {
     }
 
     public function testShouldRetrieveShipments() {
-        $this->mockResponse(200, [Mocks::getFakeShipmentBody()]);
+        $this->mockResponse(200, [MockV1Responses::getFakeShipmentBody()]);
 
         $result = Shipment::retrieve();
 
@@ -34,7 +34,7 @@ class ShipmentV1RetrieveTest extends APIV1TestCase {
 
             return [
                 "status" => 200,
-                "body" => json_encode([Mocks::getFakeShipmentBody()])
+                "body" => json_encode([MockV1Responses::getFakeShipmentBody()])
             ];
         });
 

@@ -5,7 +5,7 @@ namespace Trunkrs\SDK;
 class AddressV1MappingTest extends APIV1TestCase {
     public function testAddressV1ResponseMapping() {
         $srcAddress = Mocks::getFakeAddress();
-        $json = Mocks::getFakeAddressBody($srcAddress);
+        $json = MockV1Responses::getFakeAddressBody($srcAddress);
 
         $address = new Address($json);
 

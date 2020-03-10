@@ -4,10 +4,65 @@ namespace Trunkrs\SDK;
 
 use Faker\Factory;
 use Faker\Generator;
-use Trunkrs\SDK\Util\JsonDateTime;
+use Trunkrs\SDK\Enum\ShipmentOwnerType;
+use Trunkrs\SDK\Enum\ShipmentStatusLabel;
 
 class Mocks {
     private static $factory;
+
+    public static function getFakeShipmentLog(): ShipmentLog {
+        $log = new ShipmentLog();
+        $log->id = self::getGenerator()->randomNumber();
+        $log->description = self::getGenerator()->sentence();
+        $log->reason = self::getGenerator()->word;
+        $log->label = self::getGenerator()->randomElement([
+            ShipmentStatusLabel::DATA_RECEIVED,
+            ShipmentStatusLabel::DELIVERED,
+            ShipmentStatusLabel::NOT_DELIVERED,
+            ShipmentStatusLabel::CANCELLED,
+            ShipmentStatusLabel::DECLINED_DRIVER,
+            ShipmentStatusLabel::DELIVERED_NEIGHBOR,
+            ShipmentStatusLabel::OUT_FOR_DELIVERY,
+            ShipmentStatusLabel::SORTED_DEPOT,
+            ShipmentStatusLabel::SORTED_HUB,
+        ]);
+
+        return $log;
+    }
+
+    public static function getFakePackageOwner(): PackageOwner {
+        $owner = new PackageOwner();
+        $owner->type = self::getGenerator()->randomElement([
+           ShipmentOwnerType::DRIVER,
+           ShipmentOwnerType::MERCHANT,
+           ShipmentOwnerType::NEIGHBOUR,
+           ShipmentOwnerType::RECIPIENT,
+           ShipmentOwnerType::SUBCONTRACTOR,
+           ShipmentOwnerType::TRUNKRS,
+        ]);
+        $owner->name = self::getGenerator()->name;
+        $owner->addressLine = self::getGenerator()->address;
+        $owner->postal = self::getGenerator()->postcode;
+        $owner->city = self::getGenerator()->city;
+        $owner->country = self::getGenerator()->countryCode;
+
+        return $owner;
+    }
+
+    public static function getFakeShipmentState(
+        int $shipmentId = -1
+    ): ShipmentState {
+        $state = new ShipmentState();
+        $state->shipmentId = $shipmentId == -1
+            ? Mocks::getGenerator()->randomNumber()
+            : $shipmentId;
+        $state->timestamp = self::getGenerator()->dateTimeThisMonth;
+
+        $state->state = self::getFakeShipmentLog();
+        $state->owner = self::getFakePackageOwner();
+
+        return $state;
+    }
 
     public static function getFakeDetails(): ShipmentDetails {
         $details = new ShipmentDetails();
@@ -50,70 +105,13 @@ class Mocks {
         return $timeSlot;
     }
 
-    public static function getFakeAddressBody(Address $address = null) {
-        $actualAddress = $address
-            ? $address
-            : self::getFakeAddress();
+    public static function getFakeWebhook(): Webhook {
+        $webhook = new Webhook();
+        $webhook->callbackUrl = self::getGenerator()->url;
+        $webhook->sessionToken = uniqid();
+        $webhook->sessionHeaderName = uniqid();
 
-        return (object)[
-            "name" => $actualAddress->companyName,
-            "address" => $actualAddress->addressLine,
-            "postCode" => $actualAddress->postal,
-            "city" => $actualAddress->city,
-            "country" => $actualAddress->country,
-            "phoneNumber" => $actualAddress->phone,
-            "email" => $actualAddress->email,
-            "remarks" => $actualAddress->remarks,
-        ];
-    }
-
-    public static function getFakeTimeWindowBody(TimeWindow $timeWindow = null) {
-        $actualWindow = $timeWindow
-            ? $timeWindow
-            : self::getFakeTimeWindow();
-
-        return (object)[
-            "from" => JsonDateTime::to($actualWindow->from),
-            "to" => JsonDateTime::to($actualWindow->to),
-        ];
-    }
-
-    public static function getFakeTimeSlotBody(TimeSlot $timeSlot = null) {
-        $actualTimeSlot = $timeSlot
-            ? $timeSlot
-            : self::getFakeTimeSlot();
-
-        return (object)[
-            "id" => $actualTimeSlot->id,
-            "senderId" => $actualTimeSlot->senderId,
-            "dataWindow" => JsonDateTime::to($actualTimeSlot->dataCutOff),
-            "deliveryWindow" => self::getFakeTimeWindowBody($actualTimeSlot->deliveryWindow),
-            "collectionWindow" => self::getFakeTimeWindowBody($actualTimeSlot->collectionWindow),
-        ];
-    }
-
-    public static function getFakeShipmentBody(
-        int $shipmentId = -1,
-        string $trunkrsNr = null,
-        string $labelUrl = null,
-        Address $pickup = null,
-        Address $delivery = null,
-        TimeSlot $timeSlot = null
-    ) {
-        return (object)[
-            "shipmentId" => $shipmentId == -1
-                ? self::getGenerator()->randomNumber()
-                : $shipmentId,
-            "trunkrsNr" => $trunkrsNr
-                ? $trunkrsNr
-                : self::getTrunkrsNr(),
-            "label" => $labelUrl
-                ? $labelUrl
-                : self::getGenerator()->url,
-            "sender" => self::getFakeAddressBody($pickup),
-            "recipient" => self::getFakeAddressBody($delivery),
-            "timeSlot" => self::getFakeTimeSlotBody($timeSlot),
-        ];
+        return $webhook;
     }
 
     public static function getTrunkrsNr(): string {
