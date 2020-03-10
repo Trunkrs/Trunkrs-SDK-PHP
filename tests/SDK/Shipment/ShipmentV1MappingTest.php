@@ -8,7 +8,7 @@ class ShipmentV1MappingTest extends APIV1TestCase {
         $trunkrsNr = Mocks::getTrunkrsNr();
         $labelUrl = Mocks::getGenerator()->url;
 
-        $shipment = new Shipment(Mocks::getFakeShipmentBody(
+        $shipment = new Shipment(MockV1Responses::getFakeShipmentBody(
             $shipmentId,
             $trunkrsNr,
             $labelUrl

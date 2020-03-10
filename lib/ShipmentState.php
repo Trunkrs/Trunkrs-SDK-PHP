@@ -55,7 +55,7 @@ class ShipmentState {
      * ShipmentState constructor.
      * @param array|null $json Optional associative array to decode shipment state from.
      */
-    public function __construct(array $json = null)
+    public function __construct($json = null)
     {
         if ($json) {
             switch (Settings::$apiVersion) {

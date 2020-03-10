@@ -5,7 +5,7 @@ namespace Trunkrs\SDK;
 class TimeSlotV1MappingTest extends APIV1TestCase {
     public function testTimeSlotV1Mapping() {
         $srcTimeSlot = Mocks::getFakeTimeSlot();
-        $json = Mocks::getFakeTimeSlotBody($srcTimeSlot);
+        $json = MockV1Responses::getFakeTimeSlotBody($srcTimeSlot);
 
         $timeSlot = new TimeSlot($json);
 

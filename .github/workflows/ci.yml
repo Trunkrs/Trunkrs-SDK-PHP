@@ -9,7 +9,7 @@ jobs:
     - name: Set-up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-versions }}
+        php-version: '7.4'
         coverage: xdebug
         extensions: mbstring, simplexml, json, spl, pcre, curl
         tools: composer, phpunit:6.5.2

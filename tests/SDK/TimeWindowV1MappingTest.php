@@ -5,7 +5,7 @@ namespace Trunkrs\SDK;
 class TimeWindowV1MappingTest extends APIV1TestCase {
     public function testTimeWindowV1Mapping() {
         $srcTimeWindow = Mocks::getFakeTimeWindow();
-        $json = Mocks::getFakeTimeWindowBody($srcTimeWindow);
+        $json = MockV1Responses::getFakeTimeWindowBody($srcTimeWindow);
 
         $timeWindow = new TimeWindow($json);
 

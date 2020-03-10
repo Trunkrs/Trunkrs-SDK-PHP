@@ -31,7 +31,7 @@ class ShipmentV1CreateTest extends APIV1TestCase {
             return [
                 "status" => 200,
                 "headers" => [],
-                "body" => json_encode(Mocks::getFakeShipmentBody(
+                "body" => json_encode(MockV1Responses::getFakeShipmentBody(
                     $this->shipmentId,
                     $this->trunkrsNr,
                     $this->labelUrl,
@@ -77,7 +77,7 @@ class ShipmentV1CreateTest extends APIV1TestCase {
             return [
                 "status" => 200,
                 "headers" => [],
-                "body" => json_encode(Mocks::getFakeShipmentBody(
+                "body" => json_encode(MockV1Responses::getFakeShipmentBody(
                     $this->shipmentId,
                     $this->trunkrsNr,
                     $this->labelUrl,

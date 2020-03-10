@@ -40,7 +40,7 @@ class ShipmentLog {
      */
     public $reason;
 
-    public function __construct(array $json = null)
+    public function __construct($json = null)
     {
         if ($json) {
             switch (Settings::$apiVersion) {

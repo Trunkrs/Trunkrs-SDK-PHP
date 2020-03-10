@@ -11,7 +11,7 @@ class ShipmentV1FindTest extends APIV1TestCase {
 
             return [
                 "status" => 200,
-                "body" => json_encode(Mocks::getFakeShipmentBody())
+                "body" => json_encode(MockV1Responses::getFakeShipmentBody())
             ];
         });
 
@@ -20,7 +20,7 @@ class ShipmentV1FindTest extends APIV1TestCase {
 
     public function testShouldFindShipmentById() {
         $shipmentId = Mocks::getGenerator()->randomNumber();
-        $this->mockResponse(200, Mocks::getFakeShipmentBody($shipmentId));
+        $this->mockResponse(200, MockV1Responses::getFakeShipmentBody($shipmentId));
 
         $shipment = Shipment::find($shipmentId);
 
