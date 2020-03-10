@@ -20,5 +20,5 @@ jobs:
         COVERALLS_REPO_TOKEN: ${{ secrets.CoverallsRepoToken }}
       run: |
         apk add --no-cache php7-simplexml
-        php vendor/bin/coveralls coverage/clover.xml
+        php vendor/bin/coveralls -v ./coverage/clover.xml
 
