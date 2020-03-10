@@ -131,6 +131,7 @@ The `Webhook` class exposes a static method called `register($webhook)` which al
 ```php
 $webhook = new \Trunkrs\SDK\Webhook();
 $webhook->callbackUrl = "https://your.web.service/shipments/webhook";
+$webhook->sessionHeaderName = 'X-SESSION-TOKEN';
 $webhook->sessionToken = "your-secret-session-token";
 
 \Trunkrs\SDK\Webhook::register($webhook);
