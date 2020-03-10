@@ -5,20 +5,29 @@ name: CI
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: phpunit/phpunit:6.5.2
     steps:
+    - name: Set-up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        coverage: xdebug
+        extensions: mbstring, simplexml, json, spl, pcre, curl
+        tools: composer, phpunit:6.5.2
+
     - name: Checkout Code
       uses: actions/checkout@v2
-    - name: Install Dependencies
-      uses: php-actions/composer@v1
+
+    - name: Install dependencies
+      run: composer install --prefer-dist
+      
     - name: Run tests
       run: |
         phpunit --configuration ./phpunit.dist.xml
+        
     - name: Upload coverage
-      if: github.ref == 'refs/heads/master'
       env:
-        COVERALLS_REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        COVERALLS_SERVICE_NAME: Github
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        apk add --no-cache php7-simplexml
         php vendor/bin/coveralls coverage/clover.xml
 
