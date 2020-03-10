@@ -18,8 +18,8 @@ jobs:
       if: github.ref == 'refs/heads/master'
       env:
         COVERALLS_SERVICE_NAME: Github
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.RepoToken }}
       run: |
         apk add --no-cache php7-simplexml
-        php vendor/bin/coveralls ./coverage/clover.xml
+        php vendor/bin/coveralls --verbose 3 ./coverage/clover.xml
 
