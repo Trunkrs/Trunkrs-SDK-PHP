@@ -21,7 +21,7 @@ class Settings {
     /**
      * @var string The API endpoint url to be used in requests.
      */
-    public static $baseUrl = "https://api.trunkrs.nl/api";
+    public static $baseUrl = "https://api.trunkrs.app/api";
 
     public static $trackingBaseUrl = "https://parcel.trunkrs.nl";
 
@@ -33,7 +33,7 @@ class Settings {
     /**
      * @var string The current version of the SDK.
      */
-    public static $sdkVersion = '1.0.0';
+    public static $sdkVersion = '1.0.2';
 
     /**
      * Sets the client credentials that will be used in subsequent requests.
@@ -64,7 +64,7 @@ class Settings {
      * Switches the SDK to the staging environment.
      */
     public static function useStaging() {
-        self::$baseUrl = "https://staging-api.trunkrs.nl";
+        self::$baseUrl = "https://staging-api.trunkrs.app";
         self::$trackingBaseUrl = "https://staging-parcel.trunkrs.nl";
     }
 }
