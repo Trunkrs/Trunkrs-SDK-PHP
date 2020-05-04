@@ -107,9 +107,11 @@ class Mocks {
 
     public static function getFakeWebhook(): Webhook {
         $webhook = new Webhook();
+        $webhook->id = self::getGenerator()->randomNumber();
         $webhook->callbackUrl = self::getGenerator()->url;
         $webhook->sessionToken = uniqid();
         $webhook->sessionHeaderName = uniqid();
+        $webhook->createdAt = self::getGenerator()->dateTimeThisMonth;
 
         return $webhook;
     }
