@@ -104,6 +104,26 @@ class MockV1Responses {
         ];
     }
 
+    public static function getFakeWebhookBody(
+        Webhook $webhook = null
+    ) {
+        $actualWebhook = $webhook
+            ? $webhook
+            : Mocks::getFakeWebhook();
+
+        return (object)[
+            'id' => $actualWebhook->id,
+            'url' => $actualWebhook->callbackUrl,
+            'key' => $actualWebhook->sessionHeaderName,
+            'token' => $actualWebhook->sessionToken,
+            'uponShipmentCreation' => $actualWebhook->uponShipmentCreation,
+            'uponLabelReady' => $actualWebhook->uponLabelReady,
+            'uponStatusUpdate' => $actualWebhook->uponStatusUpdate,
+            'uponShipmentCancellation' => $actualWebhook->uponShipmentCancellation,
+            'createdAt' => JsonDateTime::to($actualWebhook->createdAt),
+        ];
+    }
+
     public static function getShipmentStateBody(
         ShipmentState $state = null
     ) {
