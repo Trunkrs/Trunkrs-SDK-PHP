@@ -21,7 +21,7 @@ class Settings {
     /**
      * @var string The API endpoint url to be used in requests.
      */
-    public static $baseUrl = "https://api.trunkrs.app/api";
+    public static $baseUrl = "https://api.trunkrs.app";
 
     public static $trackingBaseUrl = "https://parcel.trunkrs.nl";
 
@@ -33,7 +33,7 @@ class Settings {
     /**
      * @var string The current version of the SDK.
      */
-    public static $sdkVersion = '1.1.0';
+    public static $sdkVersion = '1.1.2';
 
     /**
      * Sets the client credentials that will be used in subsequent requests.
