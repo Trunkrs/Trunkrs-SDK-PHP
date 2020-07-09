@@ -34,7 +34,7 @@ class GuzzleClient implements HttpClientInterface {
         ];
 
         if (self::hasRequestBody($comparableMethod)) {
-            $options['body'] = $params;
+            $options['json'] = $params;
         } else {
             $options['query'] = $params;
         }
