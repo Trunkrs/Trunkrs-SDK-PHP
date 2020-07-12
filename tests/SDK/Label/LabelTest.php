@@ -20,4 +20,12 @@ class LabelTest extends SDKTestCase
 
         $this->assertFileNotExists($filePath);
     }
+
+    public function testShouldReflectFormatType() {
+        $zplLabel = new Label(ShipmentLabelType::ZPL);
+        $pdfLabel = new Label(ShipmentLabelType::PDF);
+
+        $this->assertEquals($zplLabel->type, ShipmentLabelType::ZPL);
+        $this->assertEquals($pdfLabel->type, ShipmentLabelType::PDF);
+    }
 }

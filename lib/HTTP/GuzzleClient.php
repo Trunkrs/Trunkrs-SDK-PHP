@@ -3,6 +3,8 @@
 namespace Trunkrs\SDK\HTTP;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 class GuzzleClient implements HttpClientInterface {
     private static function hasRequestBody($method): bool {
@@ -11,19 +13,32 @@ class GuzzleClient implements HttpClientInterface {
             || $method == 'PATCH';
     }
 
-    private static function handleResponse($response): array {
-        return [
+    private static function handleResponse(ResponseInterface $response): array {
+        $headers = array_map(function ($header) {
+            return is_array($header)
+                ? join($header)
+                : $header;
+        }, $response->getHeaders());
+        $body = $response->getBody()->getContents();
+
+        $result = [
             'status' => $response->getStatusCode(),
-            'headers' => $response->getHeaders(),
-            'body' => $response->getBody(),
+            'headers' => $headers,
         ];
+        if (!empty($body)) {
+            $result['body'] = $body;
+        }
+
+        return $result;
     }
 
     private $_client;
 
-    public function __construct()
+    public function __construct(Client $client = null)
     {
-        $this->_client = new Client();
+        $this->_client = is_null($client)
+            ? new Client()
+            : $client;
     }
 
     public function request(string $method, string $url, array $headers = [], array $params = []): array
@@ -39,11 +54,15 @@ class GuzzleClient implements HttpClientInterface {
             $options['query'] = $params;
         }
 
-        $response = $this->_client->request($comparableMethod, $url, $options);
-        return self::handleResponse($response);
+        try {
+            $response = $this->_client->request($comparableMethod, $url, $options);
+            return self::handleResponse($response);
+        } catch (RequestException $exception) {
+            return self::handleResponse($exception->getResponse());
+        }
     }
 
-    public function download(string $method, string $url, string $fileName, array $headers = [], array $params = []) {
+    public function download(string $method, string $url, string $fileName, array $headers = [], array $params = []): array {
         $comparableMethod = strtoupper($method);
         $stream = fopen($fileName, 'w');
 
@@ -58,7 +77,13 @@ class GuzzleClient implements HttpClientInterface {
             $options['query'] = $params;
         }
 
-        $this->_client->request($comparableMethod, $url, $options);
-        fclose($stream);
+        try {
+            $response = $this->_client->request($comparableMethod, $url, $options);
+            return self::handleResponse($response);
+        } catch (RequestException $exception) {
+            return self::handleResponse($exception->getResponse());
+        } finally {
+            fclose($stream);
+        }
     }
 }

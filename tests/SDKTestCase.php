@@ -2,6 +2,8 @@
 
 namespace Trunkrs\SDK;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
 use PHPUnit\Framework\TestCase;
 use Trunkrs\SDK\HTTP\HttpClientInterface;
 
@@ -48,5 +50,11 @@ abstract class SDKTestCase extends TestCase {
 
     protected function mockDownloadCallback(callable $callback) {
         $this->mockClient->method("download")->will($this->returnCallback($callback));
+    }
+
+    protected function mockGuzzleClient(array $responses): Client {
+        return new Client([
+            'handler' => new MockHandler($responses),
+        ]);
     }
 }
