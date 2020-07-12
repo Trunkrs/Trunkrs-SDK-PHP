@@ -42,4 +42,23 @@ class GuzzleClient implements HttpClientInterface {
         $response = $this->_client->request($comparableMethod, $url, $options);
         return self::handleResponse($response);
     }
+
+    public function download(string $method, string $url, string $fileName, array $headers = [], array $params = []) {
+        $comparableMethod = strtoupper($method);
+        $stream = fopen($fileName, 'w');
+
+        $options = [
+            'headers' => $headers,
+            'sink' => $stream,
+        ];
+
+        if (self::hasRequestBody($comparableMethod)) {
+            $options['json'] = $params;
+        } else {
+            $options['query'] = $params;
+        }
+
+        $this->_client->request($comparableMethod, $url, $options);
+        fclose($stream);
+    }
 }

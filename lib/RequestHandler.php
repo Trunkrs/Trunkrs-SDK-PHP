@@ -13,14 +13,16 @@ class RequestHandler {
         return sprintf("%s/v%d/%s", Settings::$baseUrl, Settings::$apiVersion, ltrim($resource, "/"));
     }
 
-    private static function createHeaders(bool $withBody): array {
+    private static function createHeaders(bool $withBody, bool $isDownload = false): array {
         $headers = [
             "User-Agent" => sprintf("Trunkrs SDK/PHP/v%s", Settings::$sdkVersion),
             "X-API-ClientId" => Settings::$clientId,
             "X-API-ClientSecret" => Settings::$clientSecret,
-            "Accept" => "application/json; charset=utf-8",
         ];
 
+        if (!$isDownload) {
+            $headers["Accept"] = "application/json; charset=utf-8";
+        }
         if ($withBody) {
             $headers["Content-Type"] = "application/json; charset=utf-8";
         }
@@ -87,7 +89,7 @@ class RequestHandler {
         $response = self::getClient()->request(
             "POST",
             self::createUrl($resource),
-            self::createHeaders(true),
+            self::createHeaders(!empty($body)),
             $body
         );
 
@@ -111,7 +113,7 @@ class RequestHandler {
         $response = self::getClient()->request(
             "PUT",
             self::createUrl($resource),
-            self::createHeaders(true),
+            self::createHeaders(!empty($body)),
             $body
         );
 
@@ -142,6 +144,50 @@ class RequestHandler {
             self::handleFailure($response);
         }
         return self::handleSuccess($response);
+    }
+
+    /**
+     * Executes a GET request and downloads the contents into the specified file.
+     * @param string $resource The resource to execute get on.
+     * @param string $fileName
+     * @return void
+     * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
+     * @throws GeneralApiException When the API responds with an unexpected answer.
+     */
+    public static function downloadGet(string $resource, string $fileName) {
+        $response = self::getClient()->download(
+            "GET",
+            self::createUrl($resource),
+            $fileName,
+            self::createHeaders(false, true)
+        );
+
+        if (!self::isSuccessful($response)) {
+            self::handleFailure($response);
+        }
+    }
+
+    /**
+     * Executes a PUT request with the specified body and downloads the contents into the specified file.
+     * @param string $resource The resource to execute delete on.
+     * @param string $fileName The file name the download the result into.
+     * @param array $body A optional associative array as the request body.
+     * @return void
+     * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
+     * @throws GeneralApiException When the API responds with an unexpected answer.
+     */
+    public static function downloadPut(string $resource, string $fileName, array $body = []) {
+        $response = self::getClient()->download(
+            "PUT",
+            self::createUrl($resource),
+            $fileName,
+            self::createHeaders(!empty($body), true),
+            $body
+        );
+
+        if (!self::isSuccessful($response)) {
+            self::handleFailure($response);
+        }
     }
 
     /**

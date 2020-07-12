@@ -125,7 +125,7 @@ class Shipment {
     public $id;
 
     /**
-     * @var string The trunrks number of the shipment.
+     * @var string The Trunkrs number of the shipment.
      */
     public $trunkrsNr;
 
@@ -187,6 +187,20 @@ class Shipment {
      */
     public function getState(): ShipmentState {
         return ShipmentState::forShipment($this->id);
+    }
+
+    /**
+     * Downloads the label file in the specified format.
+     * @param string $type The label format type. Either pdf or zpl.
+     * @see Trunkrs\SDK\Enum\ShipmentLabelType
+     * @return Label The label wrapper class.
+     */
+    public function downloadLabel(string $type): Label {
+        return Label::download(
+            $type,
+            $this->trunkrsNr,
+            $this->deliveryAddress->postal
+        );
     }
 
     /**
