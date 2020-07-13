@@ -25,7 +25,7 @@ class ShipmentV1CancelTest extends APIV1TestCase {
         $shipment = new Shipment(MockV1Responses::getFakeShipmentBody());
         $this->mockResponseCallback(function ($method, $url) use ($shipment) {
             $this->assertEquals("DELETE", $method);
-            $this->assertContains(sprintf("/%d", $shipment->id),$url);
+            $this->assertContains(sprintf("/%d", $shipment->id), $url);
 
             return ["status" => 204];
         });
