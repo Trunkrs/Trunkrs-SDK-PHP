@@ -105,11 +105,30 @@ class Label extends \SplFileObject {
 
     private $filePath;
 
+    private function getStringContents(): string {
+        $content = $this->fread($this->getSize());
+        $this->seek(0);
+
+        return $content;
+    }
+
+    /**
+     * @return string Returns the label content as BASE-64 encoded string.
+     */
+    public function getBase64Contents(): string {
+        return base64_encode($this->getStringContents());
+    }
+
     /**
      * @var string The label type.
      * @see Trunkrs\SDK\Enum\ShipmentLabelType
      */
     public $type;
+
+    public function __toString()
+    {
+        return $this->getStringContents();
+    }
 
     public function __destruct() {
         @unlink($this->filePath);
