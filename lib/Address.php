@@ -68,7 +68,7 @@ class Address {
     /**
      * @var string Any remarks for the pickup or delivery on this address.
      */
-    public $remarks;
+    public $remarks = '';
 
     /**
      * Address constructor.

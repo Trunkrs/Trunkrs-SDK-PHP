@@ -23,27 +23,27 @@ class ShipmentDetails {
     /**
      * @var string $weight Optional weight descriptor of the shipment.
      */
-    public $weight;
+    public $weight = '';
 
     /**
      * @var string $volume Optional volume descriptor of the shipment.
      */
-    public $volume;
+    public $volume = '';
 
     /**
      * @var string $width Optional width descriptor of the shipment.
      */
-    public $width;
+    public $width = '';
 
     /**
      * @var string $height Optional height descriptor of the shipment.
      */
-    public $height;
+    public $height = '';
 
     /**
      * @var string $description Description of the goods inside this shipment for customs or internal use.
      */
-    public $description;
+    public $description = '';
 
     /**
      * @var int $quantity Optionally defines how many physical parcels are part of the shipment. For every parcel a unique label must be generated.
