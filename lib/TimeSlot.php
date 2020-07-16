@@ -9,7 +9,7 @@ use Trunkrs\SDK\Util\JsonDateTime;
  */
 class TimeSlot {
     private static function applyV1(TimeSlot $timeSlot, $json) {
-        $timeSlot->id = $json->id;
+        $timeSlot->id = property_exists($json, 'id') ? $json->id : null;
         $timeSlot->dataCutOff = JsonDateTime::from($json->dataWindow);
         $timeSlot->senderId = $json->senderId;
 
