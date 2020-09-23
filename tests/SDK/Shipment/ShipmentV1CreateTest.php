@@ -73,7 +73,7 @@ class ShipmentV1CreateTest extends APIV1TestCase {
                 "deliveryEmail" => $this->deliveryAddress->email,
                 "deliveryTell" => $this->deliveryAddress->phone,
                 "deliveryRemarks" => $this->deliveryAddress->remarks,
-                "timeslotId" => $timeSlotId,
+                "timeSlotId" => $timeSlotId,
             ], $params);
 
             return [
