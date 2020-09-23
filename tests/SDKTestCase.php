@@ -10,9 +10,19 @@ use Trunkrs\SDK\HTTP\HttpClientInterface;
 abstract class SDKTestCase extends TestCase {
     protected $mockClient;
 
+    private $apiKey;
+    private $clientId;
+    private $clientSecret;
+    private $version;
+
     protected function setUp()
     {
         parent::setUp();
+
+        $this->apiKey = Settings::$apiKey;
+        $this->clientId = Settings::$clientId;
+        $this->clientSecret = Settings::$clientSecret;
+        $this->version = Settings::$apiVersion;
 
         $this->mockClient = $this->createMock(HttpClientInterface::class);
         RequestHandler::setHttpClient($this->mockClient);
@@ -56,5 +66,15 @@ abstract class SDKTestCase extends TestCase {
         return new Client([
             'handler' => new MockHandler($responses),
         ]);
+    }
+
+    public function tearDown()
+    {
+        Settings::$apiKey = $this->apiKey;
+        Settings::$clientId = $this->clientId;
+        Settings::$clientSecret = $this->clientSecret;
+        Settings::$apiVersion = $this->version;
+
+        parent::tearDown();
     }
 }

@@ -16,15 +16,32 @@ class GeneralTest extends SDKTestCase {
         RequestHandler::get("shipments");
     }
 
-    public function testAppliesCredentials() {
+    public function testAppliesV1Credentials() {
         $clientId = uniqid();
         $clientSecret = uniqid();
         Settings::setCredentials($clientId, $clientSecret);
+        Settings::setApiVersion(1);
 
         $this->mockResponseCallback(function ($method, $url, $headers) use($clientId, $clientSecret) {
             $this->assertArraySubset([
                 'X-API-ClientId' => $clientId,
                 'X-API-ClientSecret' => $clientSecret,
+            ], $headers);
+
+            return ["status" => 200];
+        });
+
+        RequestHandler::get("shipments");
+    }
+
+    public function testAppliesV2ApiKey() {
+        $apiKey = uniqid();
+        Settings::setApiKey($apiKey);
+        Settings::setApiVersion(2);
+
+        $this->mockResponseCallback(function ($method, $url, $headers) use($apiKey) {
+            $this->assertArraySubset([
+                'X-API-Key' => $apiKey,
             ], $headers);
 
             return ["status" => 200];
