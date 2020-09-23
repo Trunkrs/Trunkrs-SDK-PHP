@@ -14,6 +14,18 @@ class Address {
         $address->remarks = $json->remarks;
     }
 
+    private static function applyV2(Address $address, $json) {
+        $address->companyName = $json->companyName;
+        $address->contactName = $json->name;
+        $address->addressLine = $json->address;
+        $address->postal = $json->postalCode;
+        $address->city = $json->city;
+        $address->country = $json->country;
+        $address->phone = $json->phoneNumber;
+        $address->email = $json->emailAddress;
+        $address->remarks = $json->additionalRemarks;
+    }
+
     private static function toV1Request(string $prefix, Address $address): array {
         return [
             $prefix . 'Name' => $address->companyName,
@@ -25,6 +37,19 @@ class Address {
             $prefix . 'Email' => $address->email,
             $prefix . 'Tell' => $address->phone,
             $prefix . 'Remarks' => $address->remarks,
+        ];
+    }
+
+    private static function toV2Request(Address $address): array {
+        return [
+            'companyName' => $address->companyName,
+            'name' => $address->contactName,
+            'emailAddress' => $address->email,
+            'phoneNumber' => $address->phone,
+            'address' => $address->addressLine,
+            'postalCode' => $address->postal,
+            'city' => $address->city,
+            'additionalRemarks' => $address->remarks,
         ];
     }
 
@@ -80,6 +105,8 @@ class Address {
             switch (Settings::$apiVersion) {
                 case 1:
                     self::applyV1($this, $json);
+                case 2:
+                    self::applyV2($this, $json);
             }
         }
     }
@@ -93,6 +120,8 @@ class Address {
         switch (Settings::$apiVersion) {
             case 1:
                 return self::toV1Request($prefix, $this);
+            case 2:
+                return self::toV2Request($this);
         }
     }
 }
