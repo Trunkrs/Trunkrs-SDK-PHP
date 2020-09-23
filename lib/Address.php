@@ -49,6 +49,7 @@ class Address {
             'address' => $address->addressLine,
             'postalCode' => $address->postal,
             'city' => $address->city,
+            'country' => $address->country,
             'additionalRemarks' => $address->remarks,
         ];
     }
@@ -79,7 +80,7 @@ class Address {
     public $postal;
 
     /**
-     * @var string $country The country of the address. Note: Only NL supported for now.
+     * @var string $country The country of the address.
      */
     public $country = 'NL';
     /**
@@ -105,8 +106,10 @@ class Address {
             switch (Settings::$apiVersion) {
                 case 1:
                     self::applyV1($this, $json);
+                    break;
                 case 2:
                     self::applyV2($this, $json);
+                    break;
             }
         }
     }
