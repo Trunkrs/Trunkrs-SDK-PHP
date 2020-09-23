@@ -6,15 +6,20 @@ namespace Trunkrs\SDK;
  * Class Settings
  */
 class Settings {
-    private static $_supportedApiVersions = [1];
+    private static $_supportedApiVersions = [1, 2];
 
     /**
-     * @var string The client to used in requests.
+     * @var string The v2 API key used in requests.
+     */
+    public static $apiKey;
+
+    /**
+     * @var string The v1 client to used in requests.
      */
     public static $clientId;
 
     /**
-     * @var string The client secret to be used in requests.
+     * @var string The v1 client secret to be used in requests.
      */
     public static $clientSecret;
 
@@ -26,24 +31,35 @@ class Settings {
     public static $trackingBaseUrl = "https://parcel.trunkrs.nl";
 
     /**
-     * @var int The API version to be used. Only version 1 is supported at the moment.
+     * @var int The API version to be used. Version 1 will be deprecated at the start of February 2021.
      */
-    public static $apiVersion = 1;
+    public static $apiVersion = 2;
 
     /**
      * @var string The current version of the SDK.
      */
-    public static $sdkVersion = '1.2.3';
+    public static $sdkVersion = '2.0.0';
 
     /**
      * Sets the client credentials that will be used in subsequent requests.
+     * Should only be used in combination with api version 1.
      *
      * @param $clientId string The client id.
      * @param $clientSecret string The client secret.
      */
-    public static function setCredentials($clientId, $clientSecret) {
+    public static function setCredentials(string $clientId, string $clientSecret) {
         self::$clientId = $clientId;
         self::$clientSecret = $clientSecret;
+    }
+
+    /**
+     * Sets the API key that will be used in subsequent requests.
+     * Should only be used in combination with api version 2.
+     *
+     * @param $apiKey string The API key provided by Trunkrs.
+     */
+    public static function setApiKey(string $apiKey) {
+        self::$apiKey = $apiKey;
     }
 
     /**
@@ -52,7 +68,7 @@ class Settings {
      * @param $apiVersion int The API version to be used.
      * @throws Exception\UnsupportedVersionException When an unsupported version is requested will throw.
      */
-    public static function setApiVersion($apiVersion) {
+    public static function setApiVersion(int $apiVersion) {
         if (!in_array($apiVersion, self::$_supportedApiVersions)) {
             throw new Exception\UnsupportedVersionException($apiVersion, self::$_supportedApiVersions);
         }

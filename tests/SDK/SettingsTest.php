@@ -16,8 +16,24 @@ class SettingsTest extends TestCase {
         $this->assertEquals($clientSecret, Settings::$clientSecret);
     }
 
-    public function testSetsAPIVersion() {
+    public function testSetsApiKey() {
+        $apiKey = uniqid();
+
+        Settings::setApiKey($apiKey);
+
+        $this->assertEquals($apiKey, Settings::$apiKey);
+    }
+
+    public function testSetsAPIVersionV1() {
         $apiVersion = 1;
+
+        Settings::setApiVersion($apiVersion);
+
+        $this->assertEquals($apiVersion, Settings::$apiVersion);
+    }
+
+    public function testSetsAPIVersionV2() {
+        $apiVersion = 2;
 
         Settings::setApiVersion($apiVersion);
 
