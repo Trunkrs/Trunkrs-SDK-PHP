@@ -46,7 +46,7 @@ class Shipment {
                     $details->serialize()
                 );
                 if ($timeslotId !== -1) {
-                    $body['timeslotId'] = $timeslotId;
+                    $body['timeSlotId'] = $timeslotId;
                 }
 
                 break;
