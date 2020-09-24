@@ -5,6 +5,7 @@ namespace Trunkr\SDK;
 use PHPUnit\Framework\TestCase;
 use Trunkrs\SDK\MockV1Responses;
 use Trunkrs\SDK\Shipment;
+use Trunkr\SDK\Settings;
 
 class TrackingUrlTest extends TestCase {
     public function testCreatesValidTrackingURL() {
