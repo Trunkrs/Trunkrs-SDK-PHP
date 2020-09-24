@@ -12,8 +12,8 @@ class TrackingUrlTest extends TestCase {
 
         $trackingUrl = $shipment->getTrackingUrl();
 
-        $this->assertStringEndsWith(
-            sprintf('%s/%s', $shipment->trunkrsNr, $shipment->deliveryAddress->postal),
+        $this->assertEquals(
+            sprintf('%s/%s/%s', Settings::$trackingBaseUrl, $shipment->trunkrsNr, $shipment->deliveryAddress->postal),
             $trackingUrl
         );
     }
