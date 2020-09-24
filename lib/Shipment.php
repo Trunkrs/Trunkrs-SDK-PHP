@@ -170,8 +170,8 @@ class Shipment {
      * @return string The tracking url.
      */
     public function getTrackingUrl(): string {
-        return sprintf("
-            %s/%s/%s",
+        return sprintf(
+            "%s/%s/%s",
             Settings::$trackingBaseUrl,
             $this->trunkrsNr,
             str_replace(" ", "", $this->deliveryAddress->postal)
