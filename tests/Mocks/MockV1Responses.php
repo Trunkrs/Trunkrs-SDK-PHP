@@ -66,8 +66,8 @@ class MockV1Responses {
             "label" => $labelUrl
                 ? $labelUrl
                 : Mocks::getGenerator()->url,
-            "sender" =>  self::getFakeAddressBody($details->sender),
-            "recipient" => self::getFakeAddressBody($details->recipient),
+            "sender" =>  self::getFakeAddressBody($actualDetails->sender),
+            "recipient" => self::getFakeAddressBody($actualDetails->recipient),
             "timeSlot" => self::getFakeTimeSlotBody($timeSlot),
         ];
     }
