@@ -54,7 +54,7 @@ class MockV1Responses {
         ShipmentDetails $details = null,
         TimeSlot $timeSlot = null
     ) {
-        $actualDetails = $details ? Mocks::getFakeDetails() : $details;
+        $actualDetails = $details ?? Mocks::getFakeDetails();
 
         return (object)[
             "shipmentId" => $shipmentId == -1

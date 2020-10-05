@@ -4,7 +4,7 @@ namespace Trunkrs\SDK;
 
 class ShipmentDetailsV1MappingTest extends APIV1TestCase {
     public function testShipmentDetailsV1Mapping() {
-        $nrParcels = Mocks::getGenerator()->randomNumber(1);
+        $nrParcels = Mocks::getGenerator()->numberBetween(1, 3);
         $srcDetails = Mocks::getFakeDetails($nrParcels);
 
         $json = $srcDetails->serialize();
