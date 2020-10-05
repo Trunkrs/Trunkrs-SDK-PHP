@@ -12,23 +12,22 @@ class Parcel
         $parcel->reference = $json->reference;
         $parcel->description = $json->description;
         $parcel->measurements = new ParcelMeasurements($json);
-        $parcel->contents = new ParcelContent($json->contents);
+        $parcel->contents = array_map(function ($contentItem) {
+            return new ParcelContent($contentItem);
+        }, $json->contents);
     }
 
     private static function toV2Request(Parcel $parcel): array {
-        return [
+        $measurements = $parcel->measurements->serialize();
+        $details = [
             'reference' => $parcel->reference,
             'description' => $parcel->description,
             'contents' => array_map(function ($contentItem) {
                 return $contentItem->serialize();
             }, $parcel->contents),
-            'weight' => $parcel->measurements->serialize(),
-            'size' => [
-                'width' => $parcel->measurements->width->serialize(),
-                'height' => $parcel->measurements->height->serialize(),
-                'depth' => $parcel->measurements->depth->serialize(),
-            ],
         ];
+
+        return array_merge($details, $measurements);
     }
 
     /**

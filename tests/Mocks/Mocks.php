@@ -137,15 +137,15 @@ class Mocks {
 
     public static function getFakeParcelMeasurements(): ParcelMeasurements {
         $measurements = new ParcelMeasurements();
-        $measurements->weight = self::getWeightMeasurement();
-        $measurements->width = self::getSizeMeasurement();
-        $measurements->height = self::getSizeMeasurement();
-        $measurements->depth = self::getSizeMeasurement();
+        $measurements->weight = self::getFakeWeightMeasurement();
+        $measurements->width = self::getFakeSizeMeasurement();
+        $measurements->height = self::getFakeSizeMeasurement();
+        $measurements->depth = self::getFakeSizeMeasurement();
 
         return $measurements;
     }
 
-    public static function getWeightMeasurement(): Measurement {
+    public static function getFakeWeightMeasurement(): Measurement {
         $measurement = new Measurement();
         $measurement->value = self::getGenerator()->numberBetween(1, 100);
         $measurement->unit = self::getGenerator()->randomElement([
@@ -156,7 +156,7 @@ class Mocks {
         return $measurement;
     }
 
-    public static function getSizeMeasurement(): Measurement {
+    public static function getFakeSizeMeasurement(): Measurement {
         $measurement = new Measurement();
         $measurement->value = self::getGenerator()->numberBetween(1, 100);
         $measurement->unit = self::getGenerator()->randomElement([

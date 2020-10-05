@@ -8,7 +8,7 @@ namespace Trunkrs\SDK;
  */
 class ParcelContent
 {
-    private static function applyV2(ParcelContent $contentItem, $json): ParcelContent {
+    private static function applyV2(ParcelContent $contentItem, $json) {
         $contentItem->reference = $json->reference;
         $contentItem->name = $json->name;
         $contentItem->remarks = $json->additionalRemarks;
