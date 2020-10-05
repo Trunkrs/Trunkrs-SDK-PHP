@@ -3,6 +3,7 @@
 namespace Trunkrs\SDK;
 
 use Trunkrs\SDK\Enum\ShipmentService;
+use Trunkrs\SDK\Util\Defaults;
 
 class ShipmentDetails {
     private static function toV1Request(ShipmentDetails $details): array {
@@ -70,6 +71,12 @@ class ShipmentDetails {
      * @var Address The recipient address to which to deliver this shipment.
      */
     public $recipient;
+
+    public function __construct()
+    {
+        $this->service = Defaults::getDefaultService();
+        $this->featureCodes = Defaults::getDefaultFeatureCodes();
+    }
 
     /**
      * @internal

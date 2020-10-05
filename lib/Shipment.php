@@ -6,6 +6,7 @@ use Trunkrs\SDK\Enum\ShipmentService;
 use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\NotSupportedException;
 use Trunkrs\SDK\Exception\ShipmentNotFoundException;
+use Trunkrs\SDK\Util\Defaults;
 
 /**
  * Class Shipment
@@ -221,7 +222,7 @@ class Shipment {
      * @see ShipmentService
      * @var string The service level requested for this shipment.
      */
-    public $service = ShipmentService::SAME_DAY;
+    public $service;
 
     /**
      * Shipment constructor.
@@ -229,6 +230,9 @@ class Shipment {
      * @param array|null $json Optional associative array to decode shipment from.
      */
     public function __construct($json = null) {
+        $this->service = Defaults::getDefaultService();
+        $this->featureCodes = Defaults::getDefaultFeatureCodes();
+
         if ($json) {
             switch (Settings::$apiVersion) {
                 case 1:

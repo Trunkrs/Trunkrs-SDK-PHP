@@ -4,7 +4,9 @@ namespace Trunkrs\SDK;
 
 use Faker\Factory;
 use Faker\Generator;
+use Trunkrs\SDK\Enum\MeasurementUnit;
 use Trunkrs\SDK\Enum\ShipmentOwnerType;
+use Trunkrs\SDK\Enum\ShipmentService;
 use Trunkrs\SDK\Enum\ShipmentStatusLabel;
 
 class Mocks {
@@ -64,11 +66,50 @@ class Mocks {
         return $state;
     }
 
-    public static function getFakeDetails(): ShipmentDetails {
+    public static function getFakeParcel(int $nrContentItems = 1): Parcel {
+        $parcel = new Parcel();
+        $parcel->reference = self::getGenerator()->uuid;
+        $parcel->description = self::getGenerator()->sentence;
+        $parcel->measurements = self::getFakeParcelMeasurements();
+
+        $parcel->contents = array_fill(0, $nrContentItems, NULL);
+        $parcel->contents = array_map(function () {
+            return self::getFakeParcelContent();
+        }, $parcel->contents);
+
+        return $parcel;
+    }
+
+    public static function getRandomServiceLevel(): string {
+        return self::getGenerator()->randomElement([
+            ShipmentService::SAME_DAY,
+            ShipmentService::SAME_DAY_FOOD,
+            ShipmentService::SAME_DAY_FROZEN_FOOD,
+        ]);
+    }
+
+    public static function getFakeDetails(int $nrParcels = 1): ShipmentDetails {
         $details = new ShipmentDetails();
-        $details->reference = uniqid();
+        $details->timeSlotId = self::getGenerator()->randomNumber();
+        $details->service = self::getRandomServiceLevel();
+        $details->recipient = self::getFakeAddress();
+        $details->sender = self::getFakeAddress();
+
+        $details->parcels = array_fill(0, $nrParcels, NULL);
+        $details->parcels = array_map(function () {
+            return self::getFakeParcel();
+        }, $details->parcels);
 
         return $details;
+    }
+
+    public static function getFakeParcelContent(): ParcelContent {
+        $content = new ParcelContent();
+        $content->reference = self::getGenerator()->ean8;
+        $content->name = self::getGenerator()->colorName;
+        $content->remarks = self::getGenerator()->sentence;
+
+        return $content;
     }
 
     public static function getFakeAddress(): Address {
@@ -92,6 +133,38 @@ class Mocks {
         $window->to = self::getGenerator()->dateTimeThisMonth;
 
         return $window;
+    }
+
+    public static function getFakeParcelMeasurements(): ParcelMeasurements {
+        $measurements = new ParcelMeasurements();
+        $measurements->weight = self::getWeightMeasurement();
+        $measurements->width = self::getSizeMeasurement();
+        $measurements->height = self::getSizeMeasurement();
+        $measurements->depth = self::getSizeMeasurement();
+
+        return $measurements;
+    }
+
+    public static function getWeightMeasurement(): Measurement {
+        $measurement = new Measurement();
+        $measurement->value = self::getGenerator()->numberBetween(1, 100);
+        $measurement->unit = self::getGenerator()->randomElement([
+            MeasurementUnit::GRAMS,
+            MeasurementUnit::KILOGRAMS,
+        ]);
+
+        return $measurement;
+    }
+
+    public static function getSizeMeasurement(): Measurement {
+        $measurement = new Measurement();
+        $measurement->value = self::getGenerator()->numberBetween(1, 100);
+        $measurement->unit = self::getGenerator()->randomElement([
+            MeasurementUnit::CENTIMETERS,
+            MeasurementUnit::METERS,
+        ]);
+
+        return $measurement;
     }
 
     public static function getFakeTimeSlot(): TimeSlot {
@@ -124,6 +197,7 @@ class Mocks {
         if(!self::$factory) {
             self::$factory = Factory::create();
         }
+
         return self::$factory;
     }
 }
