@@ -51,10 +51,11 @@ class MockV1Responses {
         int $shipmentId = -1,
         string $trunkrsNr = null,
         string $labelUrl = null,
-        Address $pickup = null,
-        Address $delivery = null,
+        ShipmentDetails $details = null,
         TimeSlot $timeSlot = null
     ) {
+        $actualDetails = $details ? Mocks::getFakeDetails() : $details;
+
         return (object)[
             "shipmentId" => $shipmentId == -1
                 ? Mocks::getGenerator()->randomNumber()
@@ -65,8 +66,8 @@ class MockV1Responses {
             "label" => $labelUrl
                 ? $labelUrl
                 : Mocks::getGenerator()->url,
-            "sender" => self::getFakeAddressBody($pickup),
-            "recipient" => self::getFakeAddressBody($delivery),
+            "sender" =>  self::getFakeAddressBody($details->sender),
+            "recipient" => self::getFakeAddressBody($details->recipient),
             "timeSlot" => self::getFakeTimeSlotBody($timeSlot),
         ];
     }

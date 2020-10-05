@@ -3,98 +3,79 @@
 namespace Trunkrs\SDK;
 
 class ShipmentV1CreateTest extends APIV1TestCase {
-    private $shipmentId;
-    private $trunkrsNr;
-    private $labelUrl;
-
-    private $pickupAddress;
-    private $deliveryAddress;
-    private $details;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->shipmentId = Mocks::getGenerator()->randomNumber();
-        $this->trunkrsNr = Mocks::getTrunkrsNr();
-        $this->labelUrl = Mocks::getGenerator()->url;
-
-        $this->pickupAddress = Mocks::getFakeAddress();
-        $this->deliveryAddress = Mocks::getFakeAddress();
-        $this->details = Mocks::getFakeDetails();
-    }
-
     public function testShouldExecuteAPostRequest() {
-        $this->mockResponseCallback(function ($method) {
+        $shipmentId = Mocks::getGenerator()->randomNumber();
+        $trunkrsNr = Mocks::getTrunkrsNr();
+        $labelUrl = Mocks::getGenerator()->url;
+        $details = Mocks::getFakeDetails();
+
+        $this->mockResponseCallback(function ($method) use ($shipmentId, $trunkrsNr, $labelUrl, $details) {
             $this->assertEquals("POST", $method);
 
             return [
                 "status" => 200,
                 "headers" => [],
                 "body" => json_encode(MockV1Responses::getFakeShipmentBody(
-                    $this->shipmentId,
-                    $this->trunkrsNr,
-                    $this->labelUrl,
-                    $this->pickupAddress,
-                    $this->deliveryAddress
+                    $shipmentId,
+                    $trunkrsNr,
+                    $labelUrl,
+                    $details
                 )),
             ];
         });
 
-        Shipment::create($this->details, $this->pickupAddress, $this->deliveryAddress);
+        Shipment::create($details);
     }
 
     public function testShouldCreateAV1Shipment() {
-        $timeSlotId = Mocks::getGenerator()->randomNumber();
-        $this->mockResponseCallback(function ($method, $url, $headers, $params) use ($timeSlotId) {
+        $shipmentId = Mocks::getGenerator()->randomNumber();
+        $trunkrsNr = Mocks::getTrunkrsNr();
+        $labelUrl = Mocks::getGenerator()->url;
+        $details = Mocks::getFakeDetails();
+
+        $this->mockResponseCallback(function ($method, $url, $headers, $params) use ($details, $shipmentId, $trunkrsNr, $labelUrl) {
             $this->assertArraySubset([
-                "orderReference" => $this->details->reference,
-                "weight" => $this->details->weight,
-                "volume" => $this->details->volume,
-                "width" => $this->details->width,
-                "height" => $this->details->height,
-                "goodsDescription" => $this->details->description,
-                "totalQuantity" => $this->details->quantity,
-                "pickupName" => $this->pickupAddress->companyName,
-                "pickupContact" => $this->pickupAddress->contactName,
-                "pickupAddress" => $this->pickupAddress->addressLine,
-                "pickupCity" => $this->pickupAddress->city,
-                "pickupPostCode" => $this->pickupAddress->postal,
-                "pickupCountry" => $this->pickupAddress->country,
-                "pickupEmail" => $this->pickupAddress->email,
-                "pickupTell" => $this->pickupAddress->phone,
-                "pickupRemarks" => $this->pickupAddress->remarks,
-                "deliveryName" => $this->deliveryAddress->companyName,
-                "deliveryContact" => $this->deliveryAddress->contactName,
-                "deliveryAddress" => $this->deliveryAddress->addressLine,
-                "deliveryCity" => $this->deliveryAddress->city,
-                "deliveryPostCode" => $this->deliveryAddress->postal,
-                "deliveryCountry" => $this->deliveryAddress->country,
-                "deliveryEmail" => $this->deliveryAddress->email,
-                "deliveryTell" => $this->deliveryAddress->phone,
-                "deliveryRemarks" => $this->deliveryAddress->remarks,
-                "timeSlotId" => $timeSlotId,
+                "orderReference" => $details->parcels[0]->reference,
+                "weight" => $details->parcels[0]->measurements->weight->serialize(),
+                "volume" => $details->parcels[0]->measurements->depth->serialize(),
+                "width" => $details->parcels[0]->measurements->width->serialize(),
+                "height" => $details->parcels[0]->measurements->height->serialize(),
+                "goodsDescription" => $details->parcels[0]->description,
+                "totalQuantity" => count($details->parcels),
+                "pickupName" => $details->sender->companyName,
+                "pickupContact" => $details->sender->contactName,
+                "pickupAddress" => $details->sender->addressLine,
+                "pickupCity" => $details->sender->city,
+                "pickupPostCode" => $details->sender->postal,
+                "pickupCountry" => $details->sender->country,
+                "pickupEmail" => $details->sender->email,
+                "pickupTell" => $details->sender->phone,
+                "pickupRemarks" => $details->sender->remarks,
+                "deliveryName" => $details->recipient->companyName,
+                "deliveryContact" => $details->recipient->contactName,
+                "deliveryAddress" => $details->recipient->addressLine,
+                "deliveryCity" => $details->recipient->city,
+                "deliveryPostCode" => $details->recipient->postal,
+                "deliveryCountry" => $details->recipient->country,
+                "deliveryEmail" => $details->recipient->email,
+                "deliveryTell" => $details->recipient->phone,
+                "deliveryRemarks" => $details->recipient->remarks,
+                "timeSlotId" => $details->timeSlotId,
             ], $params);
 
             return [
                 "status" => 200,
                 "headers" => [],
                 "body" => json_encode(MockV1Responses::getFakeShipmentBody(
-                    $this->shipmentId,
-                    $this->trunkrsNr,
-                    $this->labelUrl,
-                    $this->pickupAddress,
-                    $this->deliveryAddress
+                    $shipmentId,
+                    $trunkrsNr,
+                    $labelUrl,
+                    $details
                 )),
             ];
         });
 
-        $shipmentResult = Shipment::create(
-            $this->details,
-            $this->pickupAddress,
-            $this->deliveryAddress,
-            $timeSlotId
-        );
+        $shipmentResult = Shipment::create($details);
 
         $this->assertCount(1, $shipmentResult);
 

@@ -16,6 +16,6 @@ class ShipmentV1MappingTest extends APIV1TestCase {
 
         $this->assertAttributeEquals($shipmentId, 'id', $shipment);
         $this->assertAttributeEquals($trunkrsNr, 'trunkrsNr', $shipment);
-        $this->assertAttributeEquals($labelUrl, 'labelUrl', $shipment);
+        $this->assertAttributeEquals($labelUrl, 'pdfUrl', $shipment->label);
     }
 }
