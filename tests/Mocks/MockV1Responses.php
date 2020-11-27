@@ -120,7 +120,7 @@ class MockV1Responses {
             'uponLabelReady' => $actualWebhook->uponLabelReady,
             'uponStatusUpdate' => $actualWebhook->uponStatusUpdate,
             'uponShipmentCancellation' => $actualWebhook->uponShipmentCancellation,
-            'createdAt' => JsonDateTime::to($actualWebhook->createdAt),
+            'created_at' => JsonDateTime::to($actualWebhook->createdAt),
         ];
     }
 
