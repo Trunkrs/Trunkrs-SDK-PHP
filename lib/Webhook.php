@@ -21,7 +21,7 @@ class Webhook {
 
     private static function applyV1(Webhook $webhook, $json) {
         $webhook->id = $json->id;
-        $webhook->callbackUrl = $json->url ?? '';
+        $webhook->callbackUrl = $json->url ?? null;
         $webhook->sessionHeaderName = $json->key;
         $webhook->sessionToken = $json->token;
         $webhook->uponShipmentCreation = $json->uponShipmentCreation;
