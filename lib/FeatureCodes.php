@@ -2,7 +2,9 @@
 
 namespace Trunkrs\SDK;
 
-class FeatureCodes
+use Trunkrs\SDK\Util\SerializableInterface;
+
+class FeatureCodes implements SerializableInterface
 {
     private static function applyV2(FeatureCodes $codes, $json) {
         $codes->noNeighbourDelivery = $json->noNeighbourDelivery;
@@ -60,7 +62,7 @@ class FeatureCodes
     /**
      * @internal
      */
-    function serialize() {
+    function serialize(): array {
         switch (Settings::$apiVersion) {
             case 2:
                 return self::toV2Request($this);

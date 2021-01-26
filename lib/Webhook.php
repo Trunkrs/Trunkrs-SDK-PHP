@@ -2,33 +2,60 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Enum\WebhookEvent;
 use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\WebhookNotFoundException;
 use Trunkrs\SDK\Util\JsonDateTime;
+use Trunkrs\SDK\Util\SerializableInterface;
 
-class Webhook {
-    private static function toV1Request(Webhook $webhook):array {
-        return [
-            'url' => $webhook->callbackUrl,
-            'key' => $webhook->sessionHeaderName,
-            'token' => $webhook->sessionToken,
-            'uponShipmentCreation' => $webhook->uponShipmentCreation,
-            'uponLabelReady' => $webhook->uponLabelReady,
-            'uponStatusUpdate' => $webhook->uponStatusUpdate,
-            'uponShipmentCancellation' => $webhook->uponShipmentCancellation,
-        ];
-    }
-
-    private static function applyV1(Webhook $webhook, $json) {
+class Webhook implements SerializableInterface {
+    private static function applyV1(Webhook $webhook, \stdClass $json)
+    {
         $webhook->id = $json->id;
         $webhook->callbackUrl = $json->url;
         $webhook->sessionHeaderName = $json->key;
         $webhook->sessionToken = $json->token;
-        $webhook->uponShipmentCreation = $json->uponShipmentCreation;
-        $webhook->uponLabelReady = $json->uponLabelReady;
-        $webhook->uponStatusUpdate = $json->uponStatusUpdate;
-        $webhook->uponShipmentCancellation = $json->uponShipmentCancellation;
+
+        if ($json->uponStatusUpdate) {
+            $webhook->event = WebhookEvent::ON_STATE_UPDATE;
+        } else if ($json->uponShipmentCreation) {
+            $webhook->event = WebhookEvent::ON_CREATION;
+        } else if ($json->uponShipmentCancellation) {
+            $webhook->event = WebhookEvent::ON_CANCELLATION;
+        }
+
         $webhook->createdAt = JsonDateTime::from($json->createdAt);
+    }
+
+    private static function applyV2(Webhook $hook, \stdClass $json) {
+        $hook->id = $json->id;
+        $hook->callbackUrl = $json->url;
+        $hook->sessionHeaderName = $json->header->key;
+        $hook->sessionToken = $json->header->token;
+        $hook->event = $json->event;
+    }
+
+    private function toV1Request(): array {
+        return [
+            'url' => $this->callbackUrl,
+            'key' => $this->sessionHeaderName,
+            'token' => $this->sessionToken,
+            'uponShipmentCreation' => $this->event == WebhookEvent::ON_CREATION,
+            'uponLabelReady' => false,
+            'uponStatusUpdate' => $this->event == WebhookEvent::ON_STATE_UPDATE,
+            'uponShipmentCancellation' => $this->event == WebhookEvent::ON_CANCELLATION,
+        ];
+    }
+
+    private function toV2Request(): array {
+        return [
+            'url' => $this->callbackUrl,
+            'header' => [
+                'key' => $this->sessionHeaderName,
+                'token' => $this->sessionToken,
+            ],
+            'event' => $this->event,
+        ];
     }
 
     /**
@@ -41,11 +68,9 @@ class Webhook {
      * @throws Exception\ServerValidationException
      */
     public static function register(Webhook $webhook): Webhook {
-        switch (Settings::$apiVersion) {
-            case 1:
-                $json = RequestHandler::post("webhooks", self::toV1Request($webhook));
-                return new Webhook($json);
-        }
+        $json = RequestHandler::post("webhooks", $webhook->serialize());
+
+        return new Webhook($json);
     }
 
     /**
@@ -118,7 +143,7 @@ class Webhook {
     /**
      * @var string $sessionHeaderName Optionally specify the header in which the session token will be communicated. Defaults to X-API-Token.
      */
-    public $sessionHeaderName = 'X-API-Token';
+    public $sessionHeaderName = 'X-API-Key';
 
     /**
      * @var string $sessionToken A token that will be added in the specified session header.
@@ -126,37 +151,22 @@ class Webhook {
     public $sessionToken;
 
     /**
-     * @var bool Enables updates for shipment creation.
-     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
+     * @var string The event on which to fire this webhook.
+     * @see WebhookEvent
+     * @since 2.0.0
      */
-    public $uponShipmentCreation = true;
-
-    /**
-     * @var bool Enables updates for when shipment labels have been created.
-     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
-     */
-    public $uponLabelReady = true;
-
-    /**
-     * @var bool $uponStatusUpdate Enables updates when the shipment status changes.
-     */
-    public $uponStatusUpdate = true;
-
-    /**
-     * @var bool $uponShipmentCancellation Enables update when the shipment has been cancelled.
-     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
-     */
-    public $uponShipmentCancellation = true;
+    public $event;
 
     /**
      * @var \DateTime $createdAt The moment the web hook was created. Only available after creation of the web hook.
+     * @deprecated Removed as of API version 2.
      */
     public $createdAt;
 
     /**
      * Webhook constructor.
      *
-     * @param array|null $json Optional associative array to decode web hook from.
+     * @param \stdClass|null $json Optional associative array to decode web hook from.
      */
     public function __construct($json = null) {
         if ($json) {
@@ -164,7 +174,23 @@ class Webhook {
                 case 1:
                     self::applyV1($this, $json);
                     break;
+                case 2:
+                    self::applyV2($this, $json);
+                    break;
             }
+        }
+    }
+
+    /**
+     * @internal
+     */
+    function serialize(): array
+    {
+        switch (Settings::$apiVersion) {
+            case 1:
+                return self::toV1Request();
+            case 2:
+                return self::toV2Request();
         }
     }
 

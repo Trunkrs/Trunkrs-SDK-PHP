@@ -3,12 +3,13 @@
 namespace Trunkrs\SDK;
 
 use Trunkrs\SDK\Enum\MeasurementUnit;
+use Trunkrs\SDK\Util\SerializableInterface;
 
 /**
  * Class Measurement
  * @package Trunkrs\SDK
  */
-class Measurement
+class Measurement implements SerializableInterface
 {
     private static function applyV2(Measurement $measurement, $json) {
         $measurement->value = $json->value;

@@ -2,7 +2,9 @@
 
 namespace Trunkrs\SDK;
 
-class ParcelMeasurements {
+use Trunkrs\SDK\Util\SerializableInterface;
+
+class ParcelMeasurements implements SerializableInterface {
     private static function applyV2(ParcelMeasurements $measurements, $json) {
         $measurements->weight = new Measurement($json->weight);
         $measurements->width = new Measurement($json->size->width);
@@ -63,7 +65,7 @@ class ParcelMeasurements {
     /**
      * @internal
      */
-    function serialize() {
+    function serialize(): array {
         switch (Settings::$apiVersion) {
             case 1:
                 return self::toV1Request($this);

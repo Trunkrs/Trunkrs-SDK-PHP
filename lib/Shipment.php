@@ -27,7 +27,7 @@ class Shipment {
         $shipment->sender = new Address($json->sender);
         $shipment->recipient = new Address($json->recipient);
 
-        array_map(function ($parcelJson) {
+        $shipment->parcels = array_map(function ($parcelJson) {
             return new Parcel($parcelJson);
         }, $json->parcels);
 
@@ -65,11 +65,11 @@ class Shipment {
      * @throws ShipmentNotFoundException When the specified shipment couldn't be found.
      * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws GeneralApiException When the API responds with an unexpected answer.
-     * @throws NotSupportedException When
+     * @throws NotSupportedException When using API version 1 and calling this method.
      */
     public static function find(string $trunkrsNr): Shipment {
         if (Settings::$apiVersion == 1) {
-            throw new NotSupportedException('Please use the shipment id instead of the Trunkrs number.');
+            throw new NotSupportedException('Please use Shipment::findById in combination with the shipment id instead.');
         }
 
         try {
@@ -199,7 +199,7 @@ class Shipment {
     public $recipient;
 
     /**
-     * @var TimeSlot $timeSlot The timeslot in which the shipment has been created.
+     * @var TimeSlot The timeslot in which the shipment has been created.
      */
     public $timeSlot;
 
@@ -215,14 +215,22 @@ class Shipment {
 
     /**
      * @var FeatureCodes The feature codes set for this shipment.
+     * @since 2.0.0
      */
     public $featureCodes;
 
     /**
      * @see ShipmentService
      * @var string The service level requested for this shipment.
+     * @since 2.0.0
      */
     public $service;
+
+    /**
+     * @var Parcel[] The parcels within this shipment.
+     * @since 2.0.0
+     */
+    public $parcels;
 
     /**
      * Shipment constructor.

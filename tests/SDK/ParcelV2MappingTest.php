@@ -10,8 +10,8 @@ class ParcelV2MappingTest extends APIV2TestCase {
 
         $request = $subject->serialize();
 
-        $this->assertEquals($expected["reference"], $request["reference"]);
-        $this->assertEquals($expected["description"], $request["description"]);
+        $this->assertEquals($expected->reference, $request["reference"]);
+        $this->assertEquals($expected->description, $request["description"]);
         $this->assertCount($nrContentItems, $request['contents']);
         $this->assertArrayHasKey("size", $request);
         $this->assertArrayHasKey("weight", $request);

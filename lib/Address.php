@@ -2,7 +2,9 @@
 
 namespace Trunkrs\SDK;
 
-class Address {
+use Trunkrs\SDK\Util\SerializableInterface;
+
+class Address implements SerializableInterface {
     private static function applyV1(Address $address, $json) {
         $address->contactName = $json->name;
         $address->addressLine = $json->address;

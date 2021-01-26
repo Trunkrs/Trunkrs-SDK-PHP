@@ -33,7 +33,7 @@
     }
   },
   "require-dev": {
-    "cedx/coveralls": "^12",
+    "cedx/coveralls": "^10",
     "fzaninotto/faker": "^1.9.1",
     "phpunit/phpunit": "^6",
     "php-coveralls/php-coveralls": "^2"

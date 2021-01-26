@@ -7,26 +7,29 @@ use Faker\Generator;
 use Trunkrs\SDK\Enum\MeasurementUnit;
 use Trunkrs\SDK\Enum\ShipmentOwnerType;
 use Trunkrs\SDK\Enum\ShipmentService;
+use Trunkrs\SDK\Enum\ShipmentStatus;
 use Trunkrs\SDK\Enum\ShipmentStatusLabel;
+use Trunkrs\SDK\Enum\WebhookEvent;
 
 class Mocks {
     private static $factory;
 
     public static function getFakeShipmentLog(): ShipmentLog {
         $log = new ShipmentLog();
-        $log->id = self::getGenerator()->randomNumber();
-        $log->description = self::getGenerator()->sentence();
         $log->reason = self::getGenerator()->word;
-        $log->label = self::getGenerator()->randomElement([
-            ShipmentStatusLabel::DATA_RECEIVED,
-            ShipmentStatusLabel::DELIVERED,
-            ShipmentStatusLabel::NOT_DELIVERED,
-            ShipmentStatusLabel::CANCELLED,
-            ShipmentStatusLabel::DECLINED_DRIVER,
-            ShipmentStatusLabel::DELIVERED_NEIGHBOR,
-            ShipmentStatusLabel::OUT_FOR_DELIVERY,
-            ShipmentStatusLabel::SORTED_DEPOT,
-            ShipmentStatusLabel::SORTED_HUB,
+        $log->code = self::getGenerator()->randomElement([
+            ShipmentStatus::DATA_PROCESSED,
+            ShipmentStatus::SHIPMENT_SORTED,
+            ShipmentStatus::SHIPMENT_SORTED_AT_SUB_DEPOT,
+            ShipmentStatus::SHIPMENT_ACCEPTED_BY_DRIVER,
+            ShipmentStatus::SHIPMENT_DELIVERED,
+            ShipmentStatus::SHIPMENT_DELIVERED_TO_NEIGHBOR,
+            ShipmentStatus::SHIPMENT_NOT_DELIVERED,
+            ShipmentStatus::EXCEPTION_SHIPMENT_DECLINED_BY_DRIVER,
+            ShipmentStatus::EXCEPTION_SHIPMENT_CANCELLED_BY_SENDER,
+            ShipmentStatus::EXCEPTION_SHIPMENT_CANCELLED_BY_TRUNKRS,
+            ShipmentStatus::EXCEPTION_SHIPMENT_MISS_SORTED,
+            ShipmentStatus::EXCEPTION_SHIPMENT_NOT_ARRIVED,
         ]);
 
         return $log;
@@ -64,6 +67,29 @@ class Mocks {
         $state->owner = self::getFakePackageOwner();
 
         return $state;
+    }
+
+    public static function getFakeShipment(
+        $nrParcels = 1
+    ): Shipment {
+        $shipment = new Shipment();
+        $shipment->id = self::getGenerator()->numberBetween(10000, 100000000);
+        $shipment->trunkrsNr = Mocks::getTrunkrsNr();
+        $shipment->sender = Mocks::getFakeAddress();
+        $shipment->recipient = Mocks::getFakeAddress();
+
+        $shipment->parcels = array_fill(0, $nrParcels, NULL);
+        $shipment->parcels = array_map(function () {
+            return self::getFakeParcel();
+        }, $shipment->parcels);
+
+        $shipment->featureCodes = Mocks::getFakeFeatureCodes();
+        $shipment->service = self::getRandomServiceLevel();
+        $shipment->timeSlot = self::getFakeTimeSlot();
+        $shipment->state = self::getFakeShipmentState();
+        $shipment->label = self::getFakeLabelUrls();
+
+        return $shipment;
     }
 
     public static function getFakeParcel(int $nrContentItems = 1): Parcel {
@@ -127,6 +153,25 @@ class Mocks {
         return $address;
     }
 
+    public static function getFakeFeatureCodes(): FeatureCodes {
+        $codes = new FeatureCodes();
+        $codes->deliverInMailBox = self::getGenerator()->boolean;
+        $codes->maxDeliveryAttempts = self::getGenerator()->numberBetween(1, 3);
+        $codes->maxHoursOutsideFreezer = self::getGenerator()->numberBetween(6, 48);
+        $codes->noNeighbourDelivery = self::getGenerator()->boolean;
+        $codes->noSignature = self::getGenerator()->boolean;
+
+        return $codes;
+    }
+
+    public static function getFakeLabelUrls(): LabelUrls {
+        $urls = new LabelUrls();
+        $urls->pdfUrl = self::getGenerator()->url;
+        $urls->zplUrl = self::getGenerator()->url;
+
+        return $urls;
+    }
+
     public static function getFakeTimeWindow(): TimeWindow {
         $window = new TimeWindow();
         $window->from = self::getGenerator()->dateTimeThisMonth;
@@ -171,19 +216,40 @@ class Mocks {
         $timeSlot = new TimeSlot();
         $timeSlot->id = self::getGenerator()->randomNumber();
         $timeSlot->senderId = self::getGenerator()->randomNumber();
+        $timeSlot->sender = self::getFakeAddress();
         $timeSlot->dataCutOff = self::getGenerator()->dateTimeThisMonth;
         $timeSlot->collectionWindow = self::getFakeTimeWindow();
         $timeSlot->deliveryWindow = self::getFakeTimeWindow();
+        $timeSlot->serviceArea = self::getFakeServiceArea();
 
         return $timeSlot;
     }
 
-    public static function getFakeWebhook(): Webhook {
+    public static function getFakeServiceArea(): ServiceArea {
+        $area = new ServiceArea();
+        $area->country = self::getGenerator()->countryCode;
+
+        $area->region = array_fill(0, self::getGenerator()->numberBetween(3, 25), NULL);
+        $area->region = array_map(function () {
+            return self::getGenerator()->numberBetween(100, 999);
+        }, $area->region);
+
+        return $area;
+    }
+
+    public static function getFakeWebhook(
+        string $event = null
+    ): Webhook {
         $webhook = new Webhook();
         $webhook->id = self::getGenerator()->randomNumber();
         $webhook->callbackUrl = self::getGenerator()->url;
         $webhook->sessionToken = uniqid();
         $webhook->sessionHeaderName = uniqid();
+        $webhook->event = $event ?? self::getGenerator()->randomElement([
+            WebhookEvent::ON_CREATION,
+            WebhookEvent::ON_CANCELLATION,
+            WebhookEvent::ON_STATE_UPDATE,
+        ]);
         $webhook->createdAt = self::getGenerator()->dateTimeThisMonth;
 
         return $webhook;

@@ -2,11 +2,13 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Util\SerializableInterface;
+
 /**
  * Class ParcelContent
  * @package Trunkrs\SDK
  */
-class ParcelContent
+class ParcelContent implements SerializableInterface
 {
     private static function applyV2(ParcelContent $contentItem, $json) {
         $contentItem->reference = $json->reference;
@@ -50,7 +52,7 @@ class ParcelContent
     /**
      * @internal
      */
-    function serialize() {
+    function serialize(): array {
         switch (Settings::$apiVersion) {
             case 2:
                 return self::toV2Request($this);

@@ -4,8 +4,9 @@ namespace Trunkrs\SDK;
 
 use Trunkrs\SDK\Enum\ShipmentService;
 use Trunkrs\SDK\Util\Defaults;
+use Trunkrs\SDK\Util\SerializableInterface;
 
-class ShipmentDetails {
+class ShipmentDetails implements SerializableInterface {
     private static function toV1Request(ShipmentDetails $details): array {
         $firstParcel = $details->parcels[0];
         $measurementsJson = $firstParcel->measurements->serialize();

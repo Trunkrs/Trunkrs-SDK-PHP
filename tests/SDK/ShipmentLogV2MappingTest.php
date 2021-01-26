@@ -1,11 +1,13 @@
 <?php
 
+
 namespace Trunkrs\SDK;
 
-class ShipmentLogV1MappingTest extends APIV1TestCase {
-    public function testMapsShipmentLogV1() {
+class ShipmentLogV2MappingTest extends APIV2TestCase
+{
+    public function testShouldMapV2Response() {
         $srcLog = Mocks::getFakeShipmentLog();
-        $json = MockV1Responses::getFakeShipmentLogBody($srcLog);
+        $json = MockV2Responses::getFakeShipmentLogBody($srcLog);
 
         $log = new ShipmentLog($json);
 
