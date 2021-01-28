@@ -7,6 +7,7 @@ use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\NotSupportedException;
 use Trunkrs\SDK\Exception\ShipmentNotFoundException;
 use Trunkrs\SDK\Util\Defaults;
+use Trunkrs\SDK\Util\ResultUnwrapper;
 
 /**
  * Class Shipment
@@ -47,7 +48,9 @@ class Shipment {
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
     public static function create(ShipmentDetails $shipment): array {
-        $results = RequestHandler::post('shipments', $shipment->serialize());
+        $response = RequestHandler::post('shipments', $shipment->serialize());
+        $results = ResultUnwrapper::unwrap($response);
+
         if (!is_array($results)) {
             $results = [$results];
         }
@@ -74,7 +77,7 @@ class Shipment {
 
         try {
             $json = RequestHandler::get(sprintf("shipments/%s", $trunkrsNr));
-            return new Shipment($json);
+            return new Shipment(ResultUnwrapper::unwrap($json));
         } catch (GeneralApiException $exception) {
             $isShipmentNotFound = $exception->getStatusCode() == 404;
             if ($isShipmentNotFound)  {
@@ -102,7 +105,7 @@ class Shipment {
 
         try {
             $json = RequestHandler::get(sprintf("shipments/%d", $id));
-            return new Shipment($json);
+            return new Shipment(ResultUnwrapper::unwrap($json));
         } catch (GeneralApiException $exception) {
             $isShipmentNotFound = $exception->getStatusCode() == 404;
             if ($isShipmentNotFound)  {
@@ -121,7 +124,18 @@ class Shipment {
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
     public static function retrieve(int $page = 1): array {
-        $jsonResult = RequestHandler::get('shipments', [ 'page' => $page ]);
+        $params = [];
+        switch (Settings::$apiVersion) {
+            case 1:
+                $params = ['page' => $page];
+                break;
+            case 2:
+                $params = ['offset' => $page - 1 * 50, 'limit' => 50];
+                break;
+        }
+
+        $response = RequestHandler::get('shipments', $params);
+        $jsonResult = ResultUnwrapper::unwrap($response);
 
         return array_map(function ($json) {
             return new Shipment($json);

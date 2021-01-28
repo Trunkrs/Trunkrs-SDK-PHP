@@ -25,6 +25,30 @@ class MockV2Responses {
         ];
     }
 
+    public static function getFakeShipmentFromDetailsBody(
+        string $trunkrsNr,
+        string $serviceLevel,
+        LabelUrls $labelUrls,
+        ShipmentState $state,
+        TimeSlot $timeSlot,
+        FeatureCodes $codes,
+        ShipmentDetails $details
+    ): \stdClass {
+        return (object) [
+            'trunkrsNr' => $trunkrsNr,
+            'label' => self::getFakeLabelUrlsBody($labelUrls),
+            'sender' => self::getFakeAddressBody($details->sender),
+            'recipient' => self::getFakeAddressBody($details->recipient),
+            'parcels' => array_map(function (Parcel $parcel) {
+                return self::getFakeParcelBody($parcel);
+            }, $details->parcels),
+            'timeSlot' => self::getFakeTimeSlotBody($timeSlot),
+            'state' => self::getFakeShipmentStateBody($state),
+            'featureCodes' => self::getFakeFeatureCodesBody($codes),
+            'service' => $serviceLevel,
+        ];
+    }
+
     public static function getFakeAddressBody(Address $address = null): \stdClass {
         $actualAddress = $address ?? Mocks::getFakeAddress();
 

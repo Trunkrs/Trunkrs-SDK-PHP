@@ -32,7 +32,9 @@ class ShipmentDetails implements SerializableInterface {
 
     private static function toV2Request(ShipmentDetails $details) {
         return [
-            'parcels' => array_map(function ($parcel) {
+            'sender' => $details->sender->serialize(),
+            'recipient' => $details->recipient->serialize(),
+            'parcel' => array_map(function ($parcel) {
                 return $parcel->serialize();
             }, $details->parcels),
             'featureCodes' => $details->featureCodes->serialize(),
