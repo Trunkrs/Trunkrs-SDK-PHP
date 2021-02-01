@@ -144,7 +144,7 @@ class Shipment {
 
     private static function __cancel($trunkrsNrOrId) {
         try {
-            RequestHandler::delete(sprintf('shipments/%d', $trunkrsNrOrId));
+            RequestHandler::delete(sprintf('shipments/%s', $trunkrsNrOrId));
         } catch (GeneralApiException $exception) {
             $isShipmentNotFound = $exception->getStatusCode() == 404;
             if ($isShipmentNotFound)  {

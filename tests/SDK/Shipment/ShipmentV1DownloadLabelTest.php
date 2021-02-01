@@ -4,7 +4,7 @@ namespace Trunkrs\SDK;
 
 use Trunkrs\SDK\Enum\ShipmentLabelType;
 
-class ShipmentDownloadLabelTest extends APIV1TestCase {
+class ShipmentV1DownloadLabelTest extends APIV1TestCase {
     public function testShouldDownloadLabelInZPL() {
         $shipment = new Shipment(MockV1Responses::getFakeShipmentBody());
         $this->mockDownloadCallback(function ($method, $url) use ($shipment) {
