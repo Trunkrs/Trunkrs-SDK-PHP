@@ -5,40 +5,39 @@ namespace Trunkrs\SDK;
 use Trunkrs\SDK\Exception\NotSupportedException;
 use Trunkrs\SDK\Exception\ShipmentNotFoundException;
 
-class ShipmentV1FindTest extends APIV1TestCase {
-    public function testShouldExecuteAGetRequest() {
+class ShipmentV2FindTest extends APIV2TestCase
+{
+    public function testShouldExecuteGETRequest() {
         $this->mockResponseCallback(function ($method) {
             $this->assertEquals("GET", $method);
 
             return [
                 "status" => 200,
-                "body" => json_encode(MockV1Responses::getFakeShipmentBody())
+                "body" => json_encode(MockV2Responses::getFakeShipmentBody())
             ];
         });
 
-        Shipment::findById(100);
+        Shipment::find(Mocks::getTrunkrsNr());
     }
 
-    public function testShouldFindShipmentById() {
-        $shipmentId = Mocks::getGenerator()->randomNumber();
-        $this->mockResponse(200, MockV1Responses::getFakeShipmentBody($shipmentId));
+    public function testShouldFindShipmentByTrunkrsNr() {
+        $this->mockResponse(200, MockV2Responses::getFakeShipmentBody());
 
-        $shipment = Shipment::findById($shipmentId);
+        $shipment = Shipment::find(Mocks::getTrunkrsNr());
 
         $this->assertInstanceOf(Shipment::class, $shipment);
-        $this->assertAttributeEquals($shipmentId, 'id', $shipment);
     }
 
     public function testShouldThrowWhenNotFound() {
         $this->expectException(ShipmentNotFoundException::class);
         $this->mockResponse(404);
 
-        Shipment::findById(100);
+        Shipment::find(Mocks::getTrunkrsNr());
     }
 
     public function testShouldThrowSupportException() {
         $this->expectException(NotSupportedException::class);
 
-        Shipment::find(Mocks::getTrunkrsNr());
+        Shipment::findById(Mocks::getGenerator()->randomNumber());
     }
 }
