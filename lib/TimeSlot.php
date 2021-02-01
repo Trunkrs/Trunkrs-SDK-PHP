@@ -3,6 +3,7 @@
 namespace Trunkrs\SDK;
 
 use Trunkrs\SDK\Util\JsonDateTime;
+use Trunkrs\SDK\Util\ResultUnwrapper;
 
 /**
  * Class TimeSlot
@@ -29,17 +30,22 @@ class TimeSlot {
     /**
      * Retrieves next available time slots for shipments. Can optionally be retrieved for a country.
      *
+     * @param string $postalCode The postal code for which to retrieve time slots.
      * @param string $country An optional country specifier.
      * @return array An array of Timeslot instances.
      * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
-    public static function retrieve(string $country = 'NL'): array {
-        $jsonResult = RequestHandler::get('timeslots', ['country' => $country]);
+    public static function retrieve(
+        string $postalCode,
+        string $country = 'NL'
+    ): array {
+        $response = RequestHandler::get('timeslots', ['postalCode' => $postalCode, 'country' => $country]);
+        $results = ResultUnwrapper::unwrap($response);
 
         return array_map(function ($json) {
             return new TimeSlot($json);
-        }, $jsonResult);
+        }, $results);
     }
 
     /**

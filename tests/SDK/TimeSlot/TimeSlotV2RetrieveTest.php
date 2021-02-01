@@ -1,9 +1,10 @@
 <?php
 
+
 namespace Trunkrs\SDK;
 
-
-class TimeslotV1RetrieveTest extends APIV1TestCase {
+class TimeSlotV2RetrieveTest extends APIV2TestCase
+{
     public function testShouldEmitGetRequest() {
         $postalCode = Mocks::getGenerator()->postcode;
         $this->mockResponseCallback(function($method) {
@@ -12,8 +13,8 @@ class TimeslotV1RetrieveTest extends APIV1TestCase {
             return [
                 "status" => 200,
                 "body" => json_encode([
-                    MockV1Responses::getFakeTimeSlotBody(),
-                    MockV1Responses::getFakeTimeSlotBody(),
+                    MockV2Responses::getFakeTimeSlotBody(),
+                    MockV2Responses::getFakeTimeSlotBody(),
                 ]),
             ];
         });
@@ -24,8 +25,10 @@ class TimeslotV1RetrieveTest extends APIV1TestCase {
     public function testShouldExecute() {
         $postalCode = Mocks::getGenerator()->postcode;
         $this->mockResponse(200, [
-            MockV1Responses::getFakeTimeSlotBody(),
-            MockV1Responses::getFakeTimeSlotBody(),
+            'data' => [
+                MockV2Responses::getFakeTimeSlotBody(),
+                MockV2Responses::getFakeTimeSlotBody(),
+            ],
         ]);
 
         $timeSlots = TimeSlot::retrieve($postalCode);
@@ -46,7 +49,7 @@ class TimeslotV1RetrieveTest extends APIV1TestCase {
 
             return [
                 "status" => 200,
-                "body" => json_encode([MockV1Responses::getFakeTimeSlotBody()]),
+                "body" => json_encode([MockV2Responses::getFakeTimeSlotBody()]),
             ];
         });
 
@@ -63,7 +66,7 @@ class TimeslotV1RetrieveTest extends APIV1TestCase {
 
             return [
                 "status" => 200,
-                "body" => json_encode([MockV1Responses::getFakeTimeSlotBody()]),
+                "body" => json_encode([MockV2Responses::getFakeTimeSlotBody()]),
             ];
         });
 
