@@ -130,7 +130,7 @@ class Shipment {
                 $params = ['page' => $page];
                 break;
             case 2:
-                $params = ['offset' => $page - 1 * 50, 'limit' => 50];
+                $params = ['offset' => ($page - 1) * 50, 'limit' => 50];
                 break;
         }
 
