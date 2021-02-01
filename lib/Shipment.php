@@ -142,6 +142,19 @@ class Shipment {
         }, $jsonResult);
     }
 
+    private static function __cancel($trunkrsNrOrId) {
+        try {
+            RequestHandler::delete(sprintf('shipments/%d', $trunkrsNrOrId));
+        } catch (GeneralApiException $exception) {
+            $isShipmentNotFound = $exception->getStatusCode() == 404;
+            if ($isShipmentNotFound)  {
+                throw new ShipmentNotFoundException($trunkrsNrOrId);
+            }
+
+            throw $exception;
+        }
+    }
+
     /**
      * Cancels the shipment by its Trunkrs number. Only available on the V2 API.
      *
@@ -155,15 +168,7 @@ class Shipment {
             throw new NotSupportedException('Please use the shipment id instead of the Trunkrs number.');
         }
 
-        try {
-            RequestHandler::delete(sprintf('shipments/%d', $trunkrsNr));
-        } catch (GeneralApiException $exception) {
-            $isShipmentNotFound = $exception->getStatusCode() == 404;
-            if ($isShipmentNotFound)  {
-                throw new ShipmentNotFoundException($trunkrsNr);
-            }
-            throw $exception;
-        }
+        self::__cancel($trunkrsNr);
     }
 
     /**
@@ -180,15 +185,7 @@ class Shipment {
             throw new NotSupportedException('Please use the Trunkrs number instead of the shipment id.');
         }
 
-        try {
-            RequestHandler::delete(sprintf('shipments/%d', $id));
-        } catch (GeneralApiException $exception) {
-            $isShipmentNotFound = $exception->getStatusCode() == 404;
-            if ($isShipmentNotFound)  {
-                throw new ShipmentNotFoundException($id);
-            }
-            throw $exception;
-        }
+        self::__cancel($id);
     }
 
     /**
