@@ -25,7 +25,7 @@ class Webhook implements SerializableInterface {
             $webhook->event = WebhookEvent::ON_CANCELLATION;
         }
 
-        $webhook->createdAt = JsonDateTime::from($json->createdAt);
+        $webhook->createdAt = JsonDateTime::from($json->created_at);
     }
 
     private static function applyV2(Webhook $hook, \stdClass $json) {
