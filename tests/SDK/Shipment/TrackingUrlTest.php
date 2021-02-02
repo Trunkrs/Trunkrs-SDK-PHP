@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Trunkrs\SDK\APIV1TestCase;
 use Trunkrs\SDK\MockV1Responses;
 use Trunkrs\SDK\Shipment;
+use Trunkrs\SDK\Settings;
 
 class TrackingUrlTest extends APIV1TestCase {
     public function testCreatesValidTrackingURL() {
@@ -13,8 +14,8 @@ class TrackingUrlTest extends APIV1TestCase {
 
         $trackingUrl = $shipment->getTrackingUrl();
 
-        $this->assertStringEndsWith(
-            sprintf('%s/%s', $shipment->trunkrsNr, $shipment->recipient->postal),
+        $this->assertEquals(
+            sprintf('%s/%s/%s', Settings::$trackingBaseUrl, $shipment->trunkrsNr, $shipment->recipient->postal),
             $trackingUrl
         );
     }

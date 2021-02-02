@@ -140,7 +140,7 @@ class MockV1Responses {
             'uponLabelReady' => false,
             'uponStatusUpdate' => $actualWebhook->event == WebhookEvent::ON_STATE_UPDATE,
             'uponShipmentCancellation' => $actualWebhook->event == WebhookEvent::ON_CANCELLATION,
-            'createdAt' => JsonDateTime::to($actualWebhook->createdAt),
+            'created_at' => JsonDateTime::to($actualWebhook->createdAt),
         ];
     }
 

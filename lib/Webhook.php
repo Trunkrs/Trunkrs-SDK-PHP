@@ -13,7 +13,7 @@ class Webhook implements SerializableInterface {
     private static function applyV1(Webhook $webhook, \stdClass $json)
     {
         $webhook->id = $json->id;
-        $webhook->callbackUrl = $json->url;
+        $webhook->callbackUrl = $json->url ?? null;
         $webhook->sessionHeaderName = $json->key;
         $webhook->sessionToken = $json->token;
 
@@ -160,7 +160,18 @@ class Webhook implements SerializableInterface {
      * @see WebhookEvent
      * @since 2.0.0
      */
-    public $event;
+    public $uponLabelReady = true;
+
+    /**
+     * @var bool $uponStatusUpdate Enables updates when the shipment status changes.
+     */
+    public $uponStatusUpdate = true;
+
+    /**
+     * @var bool $uponShipmentCancellation Enables update when the shipment has been cancelled.
+     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
+     */
+    public $uponShipmentCancellation = true;
 
     /**
      * @var \DateTime $createdAt The moment the web hook was created. Only available after creation of the web hook.
