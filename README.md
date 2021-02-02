@@ -143,6 +143,7 @@ $webhook = new \Trunkrs\SDK\Webhook();
 $webhook->callbackUrl = "https://your.web.service/shipments/webhook";
 $webhook->sessionHeaderName = 'X-SESSION-TOKEN';
 $webhook->sessionToken = "your-secret-session-token";
+$webhook->event = \Trunkrs\SDK\Enum\WebhookEvent::ON_STATE_UPDATE;
 
 \Trunkrs\SDK\Webhook::register($webhook);
 ```
