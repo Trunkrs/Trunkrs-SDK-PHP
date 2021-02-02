@@ -56,6 +56,7 @@ class Settings {
      * Sets the API key that will be used in subsequent requests.
      * Should only be used in combination with api version 2.
      *
+     * @since 2.0.0
      * @param $apiKey string The API key provided by Trunkrs.
      */
     public static function setApiKey(string $apiKey) {

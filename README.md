@@ -7,6 +7,9 @@
 
 The Trunkrs software development kit for the public client SDK. With this PHP SDK you can manage your shipments, shipment states and webhooks within our system.
 
+> ### Migrate from version 1
+> Check out [our migration guide](MIGRATE.md) if you wish to migrate your v1 implementation of the Trunkrs SDK.
+
 ## Requirements
 
 PHP 7.0 and later.
@@ -39,7 +42,7 @@ If you use Composer, these dependencies should be handled automatically.
 Setup the SDK settings before usage by supplying your merchant credentials. If you don't have any credentials yet, please contact [Trunkrs](https://trunkrs.nl) for more information.
 
 ```php
-\Trunkrs\SDK\Settings::setCredentials("yourClientId", "yourClientSecret");
+\Trunkrs\SDK\Settings::setApiKey("your-trunkrs-api-key");
 ```
 
 ### Using staging
@@ -61,28 +64,34 @@ A shipment can be created through the `Shipment` class. It exposes a static meth
 
 ```php
 $details = new \Trunkrs\SDK\ShipmentDetails();
-$details->reference = "your-shipment-reference";
 
-$pickupAddress = new \Trunkrs\SDK\Address();
+$parcel = new \Trunkrs\SDK\Parcel();
+// Set the reference of the parcel. This is required.
+$parcel->reference = 'your-order-reference';
+
+$details->parcels = [
+    // Define which parcels are part of this shipment
+    $parcel,
+];
+
+$details->sender = new \Trunkrs\SDK\Address();
 // Set the pickup address properties.
 
-$deliveryAddress = new \Trunkrs\SDK\Address();
+$details->recipient = new \Trunkrs\SDK\Address();
 // Set the delivery address properties.
 
-$shipments = \Trunkrs\SDK\Shipment::create($details, $pickupAddress, $deliveryAddress);
+$shipments = \Trunkrs\SDK\Shipment::create($details);
 ```
 
-#### Multiple parcels
-
-In case the shipment contains multiple parcels `$details->quantity` can be set to the total amount of parcels within your shipment.
-The method will in that case return a unique `Shipment` instance and label for every parcel.
+> #### International shipping
+> When shipping internationally we require you to define the contents of a parcel as well as the volume and weight of the parcel.
 
 ### Retrieve shipment details
 
-Details for a single shipment can be retrieved through its identifier by calling the `Shipment::find($id)` method.
+Details for a single shipment can be retrieved through its identifier by calling the `Shipment::find($trunkrsNr)` method.
 
 ```php
-$shipment = \Trunkrs\SDK\Shipment::find(100);
+$shipment = \Trunkrs\SDK\Shipment::find('4000002123');
 ```
 
 ### Retrieve shipment history
@@ -98,15 +107,16 @@ $shipments = \Trunkrs\SDK\Shipment::retrieve();
 
 Shipments can be canceled by their identifier or simply through the `cancel()` method on an instance of a `Shipment`.
 
-The `Shipment` class exposes the `cancelById($shipmentId)` static method:
+The `Shipment` class exposes the `cancelByTrunkrsNr($trunkrsNr)` static method:
 ```php
-\Trunkrs\SDK\Shipment::cancelById(100);
+\Trunkrs\SDK\Shipment::cancelByTrunkrsNr('4000002123');
 ```
 
 An instance of the `Shipment` class also exposes a convenience method `cancel()`:
 
 ```php
-$shipment = \Trunkrs\SDK\Shipment::find(100);
+$shipment = \Trunkrs\SDK\Shipment::find('4000002123');
+
 $shipment->cancel();
 ```
 
@@ -116,7 +126,7 @@ To retrieve details about the shipment's current state and the current owner of 
 The `ShipmentState` class can be used which exposes the static `forShipment($shipmentId)` method.
 
 ```php
-$status = \Trunkrs\SDK\ShipmentState::forShipment(100);
+$status = \Trunkrs\SDK\ShipmentState::forShipment('4000002123');
 ```
 
 ## Web hooks
@@ -124,7 +134,7 @@ $status = \Trunkrs\SDK\ShipmentState::forShipment(100);
 To be notified about shipment state changes, Trunkrs has created a webhook notification service.
 The SDK allows the registration of a callback URL for notifications through this service.
 
-### Register a web hook
+### Register subscription
 
 The `Webhook` class exposes a static method called `register($webhook)` which allows the registration of new web hooks:
 
@@ -135,6 +145,30 @@ $webhook->sessionHeaderName = 'X-SESSION-TOKEN';
 $webhook->sessionToken = "your-secret-session-token";
 
 \Trunkrs\SDK\Webhook::register($webhook);
+```
+
+### Retrieve active subscriptions
+
+Your active webhook subscriptions can be listed using  `Webhook::retrieve()`.
+
+```php
+$webhooks = \Trunkrs\SDK\Webhook::retrieve();
+```
+
+### Cancel subscription
+
+Canceling a web hook subscription can be done using `Webhook::removeById($webhookId)` or the instance method on an instance of webhook.
+
+```php
+$webhookId = 100;
+
+\Trunkrs\SDK\Webhook::removeById($webhookId);
+```
+
+```php
+$webhook = \Trunkrs\SDK\Webhook::find(100);
+
+$webhook->remove();
 ```
 
 
