@@ -9,6 +9,7 @@ use Trunkrs\SDK\Exception\NotSupportedException;
 
 /**
  * Wrapper around Label data.
+ * @deprecated As of API version 2, the shipment has both ZPL and PDF label urls.
  * @package Trunkrs\SDK
  * @see \SplFileObject
  */
