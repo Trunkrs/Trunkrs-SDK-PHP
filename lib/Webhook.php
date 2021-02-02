@@ -6,6 +6,7 @@ use Trunkrs\SDK\Enum\WebhookEvent;
 use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\WebhookNotFoundException;
 use Trunkrs\SDK\Util\JsonDateTime;
+use Trunkrs\SDK\Util\ResultUnwrapper;
 use Trunkrs\SDK\Util\SerializableInterface;
 
 class Webhook implements SerializableInterface {
@@ -68,9 +69,10 @@ class Webhook implements SerializableInterface {
      * @throws Exception\ServerValidationException
      */
     public static function register(Webhook $webhook): Webhook {
-        $json = RequestHandler::post("webhooks", $webhook->serialize());
+        $response = RequestHandler::post("webhooks", $webhook->serialize());
+        $result = ResultUnwrapper::unwrap($response);
 
-        return new Webhook($json);
+        return new Webhook(is_array($result) ? $result[0] : $result);
     }
 
     /**
@@ -84,8 +86,10 @@ class Webhook implements SerializableInterface {
      */
     public static function find(string $id): Webhook {
         try {
-            $json = RequestHandler::get(sprintf("webhooks/%d", $id));
-            return new Webhook($json);
+            $response = RequestHandler::get(sprintf("webhooks/%s", $id));
+            $result = ResultUnwrapper::unwrap($response);
+
+            return new Webhook(is_array($result) ? $result[0] : $result);
         } catch (GeneralApiException $exception) {
             $isWebhookNotFound = $exception->getStatusCode() == 404;
             if ($isWebhookNotFound)  {
@@ -103,11 +107,12 @@ class Webhook implements SerializableInterface {
      * @throws Exception\NotAuthorizedException
      */
     public static function retrieve(): array {
-        $jsonResult = RequestHandler::get('webhooks');
+        $response = RequestHandler::get('webhooks');
+        $result = ResultUnwrapper::unwrap($response);
 
         return array_map(function ($json) {
             return new Webhook($json);
-        }, $jsonResult);
+        }, $result);
     }
 
     /**
@@ -120,7 +125,7 @@ class Webhook implements SerializableInterface {
      */
     public static function removeById(string $id) {
         try {
-            RequestHandler::delete(sprintf('webhooks/%d', $id));
+            RequestHandler::delete(sprintf('webhooks/%s', $id));
         } catch (GeneralApiException $exception) {
             $isWebhookNotFound = $exception->getStatusCode() == 404;
             if ($isWebhookNotFound)  {
