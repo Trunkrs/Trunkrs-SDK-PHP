@@ -13,21 +13,34 @@ class RequestHandler {
         return sprintf("%s/v%d/%s", Settings::$baseUrl, Settings::$apiVersion, ltrim($resource, "/"));
     }
 
+    private static function createAuthHeaders(): array {
+        switch (Settings::$apiVersion) {
+            case 1:
+                return [
+                    "X-API-ClientId" => Settings::$clientId,
+                    "X-API-ClientSecret" => Settings::$clientSecret,
+                ];
+            case 2:
+                return [
+                    'X-API-Key' => Settings::$apiKey,
+                ];
+        }
+    }
+
     private static function createHeaders(bool $withBody, bool $isDownload = false): array {
-        $headers = [
+        $authHeaders = self::createAuthHeaders();
+        $contentHeaders = [
             "User-Agent" => sprintf("Trunkrs SDK/PHP/v%s", Settings::$sdkVersion),
-            "X-API-ClientId" => Settings::$clientId,
-            "X-API-ClientSecret" => Settings::$clientSecret,
         ];
 
         if (!$isDownload) {
-            $headers["Accept"] = "application/json; charset=utf-8";
+            $contentHeaders["Accept"] = "application/json; charset=utf-8";
         }
         if ($withBody) {
-            $headers["Content-Type"] = "application/json; charset=utf-8";
+            $contentHeaders["Content-Type"] = "application/json; charset=utf-8";
         }
 
-        return $headers;
+        return array_merge($authHeaders, $contentHeaders);
     }
 
     private static function isSuccessful(array $response): bool {

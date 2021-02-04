@@ -2,7 +2,9 @@
 
 namespace Trunkrs\SDK;
 
-class Address {
+use Trunkrs\SDK\Util\SerializableInterface;
+
+class Address implements SerializableInterface {
     private static function applyV1(Address $address, $json) {
         $address->contactName = $json->name;
         $address->addressLine = $json->address;
@@ -12,6 +14,18 @@ class Address {
         $address->phone = $json->phoneNumber;
         $address->email = $json->email;
         $address->remarks = $json->remarks;
+    }
+
+    private static function applyV2(Address $address, $json) {
+        $address->companyName = $json->companyName;
+        $address->contactName = $json->name;
+        $address->addressLine = $json->address;
+        $address->postal = $json->postalCode;
+        $address->city = $json->city;
+        $address->country = $json->country;
+        $address->phone = $json->phoneNumber;
+        $address->email = $json->emailAddress;
+        $address->remarks = $json->additionalRemarks;
     }
 
     private static function toV1Request(string $prefix, Address $address): array {
@@ -25,6 +39,20 @@ class Address {
             $prefix . 'Email' => $address->email,
             $prefix . 'Tell' => $address->phone,
             $prefix . 'Remarks' => $address->remarks,
+        ];
+    }
+
+    private static function toV2Request(Address $address): array {
+        return [
+            'companyName' => $address->companyName,
+            'name' => $address->contactName,
+            'emailAddress' => $address->email,
+            'phoneNumber' => $address->phone,
+            'address' => $address->addressLine,
+            'postalCode' => $address->postal,
+            'city' => $address->city,
+            'country' => $address->country,
+            'additionalRemarks' => $address->remarks,
         ];
     }
 
@@ -54,7 +82,7 @@ class Address {
     public $postal;
 
     /**
-     * @var string $country The country of the address. Note: Only NL supported for now.
+     * @var string $country The country of the address.
      */
     public $country = 'NL';
     /**
@@ -80,6 +108,10 @@ class Address {
             switch (Settings::$apiVersion) {
                 case 1:
                     self::applyV1($this, $json);
+                    break;
+                case 2:
+                    self::applyV2($this, $json);
+                    break;
             }
         }
     }
@@ -93,6 +125,8 @@ class Address {
         switch (Settings::$apiVersion) {
             case 1:
                 return self::toV1Request($prefix, $this);
+            case 2:
+                return self::toV2Request($this);
         }
     }
 }

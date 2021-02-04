@@ -2,6 +2,7 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Exception\NotSupportedException;
 use Trunkrs\SDK\Exception\ShipmentNotFoundException;
 
 class ShipmentV1CancelTest extends APIV1TestCase {
@@ -14,13 +15,6 @@ class ShipmentV1CancelTest extends APIV1TestCase {
         Shipment::cancelById(100);
     }
 
-    public function testShouldThrowWhenShipmentNotFound() {
-        $this->mockResponse(404);
-        $this->expectException(ShipmentNotFoundException::class);
-
-        Shipment::cancelById(101);
-    }
-
     public function testShouldExecuteDeleteFromInstanceCancel() {
         $shipment = new Shipment(MockV1Responses::getFakeShipmentBody());
         $this->mockResponseCallback(function ($method, $url) use ($shipment) {
@@ -31,5 +25,18 @@ class ShipmentV1CancelTest extends APIV1TestCase {
         });
 
         $shipment->cancel();
+    }
+
+    public function testShouldThrowWhenShipmentNotFound() {
+        $this->mockResponse(404);
+        $this->expectException(ShipmentNotFoundException::class);
+
+        Shipment::cancelById(101);
+    }
+
+    public function testShouldThrowSupportException() {
+        $this->expectException(NotSupportedException::class);
+
+        Shipment::cancelByTrunkrsNr(Mocks::getTrunkrsNr());
     }
 }

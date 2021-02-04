@@ -2,33 +2,61 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Enum\WebhookEvent;
 use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\WebhookNotFoundException;
 use Trunkrs\SDK\Util\JsonDateTime;
+use Trunkrs\SDK\Util\ResultUnwrapper;
+use Trunkrs\SDK\Util\SerializableInterface;
 
-class Webhook {
-    private static function toV1Request(Webhook $webhook):array {
-        return [
-            'url' => $webhook->callbackUrl,
-            'key' => $webhook->sessionHeaderName,
-            'token' => $webhook->sessionToken,
-            'uponShipmentCreation' => $webhook->uponShipmentCreation,
-            'uponLabelReady' => $webhook->uponLabelReady,
-            'uponStatusUpdate' => $webhook->uponStatusUpdate,
-            'uponShipmentCancellation' => $webhook->uponShipmentCancellation,
-        ];
-    }
-
-    private static function applyV1(Webhook $webhook, $json) {
+class Webhook implements SerializableInterface {
+    private static function applyV1(Webhook $webhook, \stdClass $json)
+    {
         $webhook->id = $json->id;
         $webhook->callbackUrl = $json->url ?? null;
         $webhook->sessionHeaderName = $json->key;
         $webhook->sessionToken = $json->token;
-        $webhook->uponShipmentCreation = $json->uponShipmentCreation;
-        $webhook->uponLabelReady = $json->uponLabelReady;
-        $webhook->uponStatusUpdate = $json->uponStatusUpdate;
-        $webhook->uponShipmentCancellation = $json->uponShipmentCancellation;
+
+        if ($json->uponStatusUpdate) {
+            $webhook->event = WebhookEvent::ON_STATE_UPDATE;
+        } else if ($json->uponShipmentCreation) {
+            $webhook->event = WebhookEvent::ON_CREATION;
+        } else if ($json->uponShipmentCancellation) {
+            $webhook->event = WebhookEvent::ON_CANCELLATION;
+        }
+
         $webhook->createdAt = JsonDateTime::from($json->created_at);
+    }
+
+    private static function applyV2(Webhook $hook, \stdClass $json) {
+        $hook->id = $json->id;
+        $hook->callbackUrl = $json->url;
+        $hook->sessionHeaderName = $json->header->key;
+        $hook->sessionToken = $json->header->token;
+        $hook->event = $json->event;
+    }
+
+    private function toV1Request(): array {
+        return [
+            'url' => $this->callbackUrl,
+            'key' => $this->sessionHeaderName,
+            'token' => $this->sessionToken,
+            'uponShipmentCreation' => $this->event == WebhookEvent::ON_CREATION,
+            'uponLabelReady' => false,
+            'uponStatusUpdate' => $this->event == WebhookEvent::ON_STATE_UPDATE,
+            'uponShipmentCancellation' => $this->event == WebhookEvent::ON_CANCELLATION,
+        ];
+    }
+
+    private function toV2Request(): array {
+        return [
+            'url' => $this->callbackUrl,
+            'header' => [
+                'key' => $this->sessionHeaderName,
+                'token' => $this->sessionToken,
+            ],
+            'event' => $this->event,
+        ];
     }
 
     /**
@@ -41,11 +69,10 @@ class Webhook {
      * @throws Exception\ServerValidationException
      */
     public static function register(Webhook $webhook): Webhook {
-        switch (Settings::$apiVersion) {
-            case 1:
-                $json = RequestHandler::post("webhooks", self::toV1Request($webhook));
-                return new Webhook($json);
-        }
+        $response = RequestHandler::post("webhooks", $webhook->serialize());
+        $result = ResultUnwrapper::unwrap($response);
+
+        return new Webhook(is_array($result) ? $result[0] : $result);
     }
 
     /**
@@ -59,8 +86,10 @@ class Webhook {
      */
     public static function find(string $id): Webhook {
         try {
-            $json = RequestHandler::get(sprintf("webhooks/%d", $id));
-            return new Webhook($json);
+            $response = RequestHandler::get(sprintf("webhooks/%s", $id));
+            $result = ResultUnwrapper::unwrap($response);
+
+            return new Webhook(is_array($result) ? $result[0] : $result);
         } catch (GeneralApiException $exception) {
             $isWebhookNotFound = $exception->getStatusCode() == 404;
             if ($isWebhookNotFound)  {
@@ -78,11 +107,12 @@ class Webhook {
      * @throws Exception\NotAuthorizedException
      */
     public static function retrieve(): array {
-        $jsonResult = RequestHandler::get('webhooks');
+        $response = RequestHandler::get('webhooks');
+        $result = ResultUnwrapper::unwrap($response);
 
         return array_map(function ($json) {
             return new Webhook($json);
-        }, $jsonResult);
+        }, $result);
     }
 
     /**
@@ -95,7 +125,7 @@ class Webhook {
      */
     public static function removeById(string $id) {
         try {
-            RequestHandler::delete(sprintf('webhooks/%d', $id));
+            RequestHandler::delete(sprintf('webhooks/%s', $id));
         } catch (GeneralApiException $exception) {
             $isWebhookNotFound = $exception->getStatusCode() == 404;
             if ($isWebhookNotFound)  {
@@ -118,7 +148,7 @@ class Webhook {
     /**
      * @var string $sessionHeaderName Optionally specify the header in which the session token will be communicated. Defaults to X-API-Token.
      */
-    public $sessionHeaderName = 'X-API-Token';
+    public $sessionHeaderName = 'X-API-Key';
 
     /**
      * @var string $sessionToken A token that will be added in the specified session header.
@@ -126,14 +156,9 @@ class Webhook {
     public $sessionToken;
 
     /**
-     * @var bool Enables updates for shipment creation.
-     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
-     */
-    public $uponShipmentCreation = true;
-
-    /**
-     * @var bool Enables updates for when shipment labels have been created.
-     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
+     * @var string The event on which to fire this webhook.
+     * @see WebhookEvent
+     * @since 2.0.0
      */
     public $uponLabelReady = true;
 
@@ -150,13 +175,14 @@ class Webhook {
 
     /**
      * @var \DateTime $createdAt The moment the web hook was created. Only available after creation of the web hook.
+     * @deprecated Removed as of API version 2.
      */
     public $createdAt;
 
     /**
      * Webhook constructor.
      *
-     * @param array|null $json Optional associative array to decode web hook from.
+     * @param \stdClass|null $json Optional associative array to decode web hook from.
      */
     public function __construct($json = null) {
         if ($json) {
@@ -164,7 +190,23 @@ class Webhook {
                 case 1:
                     self::applyV1($this, $json);
                     break;
+                case 2:
+                    self::applyV2($this, $json);
+                    break;
             }
+        }
+    }
+
+    /**
+     * @internal
+     */
+    function serialize(): array
+    {
+        switch (Settings::$apiVersion) {
+            case 1:
+                return self::toV1Request();
+            case 2:
+                return self::toV2Request();
         }
     }
 

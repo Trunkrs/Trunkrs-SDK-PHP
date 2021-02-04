@@ -2,41 +2,32 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Enum\ReasonCode;
+use Trunkrs\SDK\Enum\ShipmentStatusLabel;
+
 /**
  * Class ShipmentLog
  */
 class ShipmentLog {
-    private static function applyV1(ShipmentLog $log, $json) {
-        $log->id = $json->id;
-        $log->label = $json->label;
-        $log->name = $json->name;
-        $log->description = $json->status;
+    private static function applyV1(ShipmentLog $log, \stdClass $json) {
+        $log->code = ShipmentStatusLabel::toShipmentStatus($json->label);
+        $log->reason = $json->reasonCode;
+    }
+
+    private static function applyV2(ShipmentLog $log, \stdClass $json) {
+        $log->code = $json->code;
         $log->reason = $json->reasonCode;
     }
 
     /**
-     * @var int $id The numeric state identifier.
+     * @var string $code The state code for the current state.
+     * @see ShipmentStatus
      */
-    public $id;
-
-    /**
-     * @see ShipmentStatusLabel
-     * @var string $label The state identifier label.
-     */
-    public $label;
-
-    /**
-     * @var string $name The name of the shipment state.
-     */
-    public $name;
-
-    /**
-     * @var string $description The human description of the shipment state.
-     */
-    public $description;
+    public $code;
 
     /**
      * @var string|null $reason The reason why this state was applied. Only applies to shipments in the SHIPMENT_NOT_DELIVERED state.
+     * @see ReasonCode
      */
     public $reason;
 
@@ -46,6 +37,9 @@ class ShipmentLog {
             switch (Settings::$apiVersion) {
                 case 1:
                     self::applyV1($this, $json);
+                    break;
+                case 2:
+                    self:self::applyV2($this, $json);
                     break;
             }
         }

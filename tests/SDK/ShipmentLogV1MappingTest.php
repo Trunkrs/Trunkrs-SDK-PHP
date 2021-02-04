@@ -9,10 +9,7 @@ class ShipmentLogV1MappingTest extends APIV1TestCase {
 
         $log = new ShipmentLog($json);
 
-        $this->assertAttributeEquals($srcLog->id, 'id', $log);
-        $this->assertAttributeEquals($srcLog->label, 'label', $log);
-        $this->assertAttributeEquals($srcLog->name, 'name', $log);
-        $this->assertAttributeEquals($srcLog->description, 'description', $log);
+        $this->assertAttributeEquals($srcLog->code, 'code', $log);
         $this->assertAttributeEquals($srcLog->reason, 'reason', $log);
     }
 }

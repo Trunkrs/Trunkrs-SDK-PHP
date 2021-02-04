@@ -2,10 +2,13 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Enum\WebhookEvent;
 use Trunkrs\SDK\Util\JsonDateTime;
 
 class MockV1Responses {
-    public static function getFakeAddressBody(Address $address = null) {
+    public static function getFakeAddressBody(
+        Address $address = null
+    ): \stdClass {
         $actualAddress = $address
             ? $address
             : Mocks::getFakeAddress();
@@ -22,7 +25,9 @@ class MockV1Responses {
         ];
     }
 
-    public static function getFakeTimeWindowBody(TimeWindow $timeWindow = null) {
+    public static function getFakeTimeWindowBody(
+        TimeWindow $timeWindow = null
+    ): \stdClass {
         $actualWindow = $timeWindow
             ? $timeWindow
             : Mocks::getFakeTimeWindow();
@@ -33,7 +38,9 @@ class MockV1Responses {
         ];
     }
 
-    public static function getFakeTimeSlotBody(TimeSlot $timeSlot = null) {
+    public static function getFakeTimeSlotBody(
+        TimeSlot $timeSlot = null
+    ): \stdClass {
         $actualTimeSlot = $timeSlot
             ? $timeSlot
             : Mocks::getFakeTimeSlot();
@@ -51,10 +58,11 @@ class MockV1Responses {
         int $shipmentId = -1,
         string $trunkrsNr = null,
         string $labelUrl = null,
-        Address $pickup = null,
-        Address $delivery = null,
+        ShipmentDetails $details = null,
         TimeSlot $timeSlot = null
-    ) {
+    ): \stdClass {
+        $actualDetails = $details ?? Mocks::getFakeDetails();
+
         return (object)[
             "shipmentId" => $shipmentId == -1
                 ? Mocks::getGenerator()->randomNumber()
@@ -65,34 +73,48 @@ class MockV1Responses {
             "label" => $labelUrl
                 ? $labelUrl
                 : Mocks::getGenerator()->url,
-            "sender" => self::getFakeAddressBody($pickup),
-            "recipient" => self::getFakeAddressBody($delivery),
+            "sender" =>  self::getFakeAddressBody($actualDetails->sender),
+            "recipient" => self::getFakeAddressBody($actualDetails->recipient),
             "timeSlot" => self::getFakeTimeSlotBody($timeSlot),
         ];
     }
 
     public static function getFakeShipmentLogBody(
         ShipmentLog $log = null
-    ) {
-        $actualLog = $log
-            ? $log
-            : Mocks::getFakeShipmentLog();
+    ): \stdClass {
+        $actualLog = $log ?? Mocks::getFakeShipmentLog();
 
         return (object)[
-            "id" => $actualLog->id,
-            "label" => $actualLog->label,
-            "name" => $actualLog->name,
-            "status" => $actualLog->description,
+            "label" => $actualLog->code,
             "reasonCode" => $actualLog->reason,
         ];
     }
 
+    public static function getFakeParcelMeasurementsBody(
+        ParcelMeasurements $measurements = null
+    ): \stdClass {
+        $actualMeasurements = $measurements ?? Mocks::getFakeParcelMeasurements();
+
+        return (object) [
+            'width' => self::getFakeMeasurementBody($actualMeasurements->width),
+            'height' => self::getFakeMeasurementBody($actualMeasurements->height),
+            'volume' => self::getFakeMeasurementBody($actualMeasurements->depth),
+            'weight' => self::getFakeMeasurementBody($actualMeasurements->weight),
+        ];
+    }
+
+    public static function getFakeMeasurementBody(
+        Measurement $measurement = null
+    ): string {
+        $actualMeasurement = $measurement ?? Mocks::getFakeSizeMeasurement();
+
+        return sprintf('%d %s', $actualMeasurement->value, $actualMeasurement->unit);
+    }
+
     public static function getFakePackageOwnerBody(
         PackageOwner $owner = null
-    ) {
-        $actualOwner = $owner
-            ? $owner
-            : Mocks::getFakePackageOwner();
+    ): \stdClass {
+        $actualOwner = $owner ?? Mocks::getFakePackageOwner();
 
         return (object)[
             "type" => $actualOwner->type,
@@ -106,30 +128,26 @@ class MockV1Responses {
 
     public static function getFakeWebhookBody(
         Webhook $webhook = null
-    ) {
-        $actualWebhook = $webhook
-            ? $webhook
-            : Mocks::getFakeWebhook();
+    ): \stdClass {
+        $actualWebhook = $webhook ?? Mocks::getFakeWebhook();
 
         return (object)[
             'id' => $actualWebhook->id,
             'url' => $actualWebhook->callbackUrl,
             'key' => $actualWebhook->sessionHeaderName,
             'token' => $actualWebhook->sessionToken,
-            'uponShipmentCreation' => $actualWebhook->uponShipmentCreation,
-            'uponLabelReady' => $actualWebhook->uponLabelReady,
-            'uponStatusUpdate' => $actualWebhook->uponStatusUpdate,
-            'uponShipmentCancellation' => $actualWebhook->uponShipmentCancellation,
+            'uponShipmentCreation' => $actualWebhook->event == WebhookEvent::ON_CREATION,
+            'uponLabelReady' => false,
+            'uponStatusUpdate' => $actualWebhook->event == WebhookEvent::ON_STATE_UPDATE,
+            'uponShipmentCancellation' => $actualWebhook->event == WebhookEvent::ON_CANCELLATION,
             'created_at' => JsonDateTime::to($actualWebhook->createdAt),
         ];
     }
 
     public static function getShipmentStateBody(
         ShipmentState $state = null
-    ) {
-        $actualState = $state
-            ? $state
-            : Mocks::getFakeShipmentState();
+    ): \stdClass {
+        $actualState = $state ?? Mocks::getFakeShipmentState();
 
         return (object)[
             "shipmentId" => $actualState->shipmentId,

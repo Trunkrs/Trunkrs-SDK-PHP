@@ -2,6 +2,7 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Exception\NotSupportedException;
 use Trunkrs\SDK\Exception\ShipmentNotFoundException;
 
 class ShipmentV1FindTest extends APIV1TestCase {
@@ -15,14 +16,14 @@ class ShipmentV1FindTest extends APIV1TestCase {
             ];
         });
 
-        Shipment::find(100);
+        Shipment::findById(100);
     }
 
     public function testShouldFindShipmentById() {
         $shipmentId = Mocks::getGenerator()->randomNumber();
         $this->mockResponse(200, MockV1Responses::getFakeShipmentBody($shipmentId));
 
-        $shipment = Shipment::find($shipmentId);
+        $shipment = Shipment::findById($shipmentId);
 
         $this->assertInstanceOf(Shipment::class, $shipment);
         $this->assertAttributeEquals($shipmentId, 'id', $shipment);
@@ -32,6 +33,12 @@ class ShipmentV1FindTest extends APIV1TestCase {
         $this->expectException(ShipmentNotFoundException::class);
         $this->mockResponse(404);
 
-        Shipment::find(100);
+        Shipment::findById(100);
+    }
+
+    public function testShouldThrowSupportException() {
+        $this->expectException(NotSupportedException::class);
+
+        Shipment::find(Mocks::getTrunkrsNr());
     }
 }

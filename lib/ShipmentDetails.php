@@ -2,53 +2,84 @@
 
 namespace Trunkrs\SDK;
 
-class ShipmentDetails {
+use Trunkrs\SDK\Enum\ShipmentService;
+use Trunkrs\SDK\Util\Defaults;
+use Trunkrs\SDK\Util\SerializableInterface;
+
+class ShipmentDetails implements SerializableInterface {
     private static function toV1Request(ShipmentDetails $details): array {
+        $firstParcel = $details->parcels[0];
+        $measurementsJson = $firstParcel->measurements->serialize();
+        $pickupAddressJson = $details->sender->serialize('pickup');
+        $recipientAddressJson = $details->recipient->serialize('delivery');
+
+        $generalJson = [
+            'orderReference' => $firstParcel->reference,
+            'goodsDescription' => $firstParcel->description,
+            'totalQuantity' => count($details->parcels),
+        ];
+        if ($details->timeSlotId != -1) {
+            $generalJson['timeSlotId'] = $details->timeSlotId;
+        }
+
+        return array_merge(
+            $generalJson,
+            $measurementsJson,
+            $pickupAddressJson,
+            $recipientAddressJson
+        );
+    }
+
+    private static function toV2Request(ShipmentDetails $details) {
         return [
-            'orderReference' => $details->reference,
-            'weight' => $details->weight,
-            'volume' => $details->volume,
-            'width' => $details->width,
-            'height' => $details->height,
-            'goodsDescription' => $details->description,
-            'totalQuantity' => $details->quantity,
+            'sender' => $details->sender->serialize(),
+            'recipient' => $details->recipient->serialize(),
+            'parcel' => array_map(function ($parcel) {
+                return $parcel->serialize();
+            }, $details->parcels),
+            'featureCodes' => $details->featureCodes->serialize(),
+            'timeSlotId' => $details->timeSlotId,
+            'service' => $details->service,
         ];
     }
 
     /**
-     * @var string The external reference to a shipment. This can be a order reference or some other identifier in your system.
+     * @var Parcel[] Details about the parcel.
      */
-    public $reference;
+    public $parcels;
 
     /**
-     * @var string $weight Optional weight descriptor of the shipment.
+     * @see TimeSlot
+     * @var int Optional time slot id. Default is next available based on data cut-off.
      */
-    public $weight = '';
+    public $timeSlotId = -1;
 
     /**
-     * @var string $volume Optional volume descriptor of the shipment.
+     * @var FeatureCodes The feature codes for this shipment.
      */
-    public $volume = '';
+    public $featureCodes;
 
     /**
-     * @var string $width Optional width descriptor of the shipment.
+     * @see ShipmentService
+     * @var string The service level of the shipment.
      */
-    public $width = '';
+    public $service;
 
     /**
-     * @var string $height Optional height descriptor of the shipment.
+     * @var Address The sender address of which to arrange pick-ups.
      */
-    public $height = '';
+    public $sender;
 
     /**
-     * @var string $description Description of the goods inside this shipment for customs or internal use.
+     * @var Address The recipient address to which to deliver this shipment.
      */
-    public $description = '';
+    public $recipient;
 
-    /**
-     * @var int $quantity Optionally defines how many physical parcels are part of the shipment. For every parcel a unique label must be generated.
-     */
-    public $quantity = 1;
+    public function __construct()
+    {
+        $this->service = Defaults::getDefaultService();
+        $this->featureCodes = Defaults::getDefaultFeatureCodes();
+    }
 
     /**
      * @internal
@@ -58,6 +89,8 @@ class ShipmentDetails {
         switch (Settings::$apiVersion) {
             case 1:
                 return self::toV1Request($this);
+            case 2:
+                return self::toV2Request($this);
         }
     }
 }

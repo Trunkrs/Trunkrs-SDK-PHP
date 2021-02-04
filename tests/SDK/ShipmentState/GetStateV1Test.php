@@ -2,6 +2,8 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Exception\NotSupportedException;
+
 class GetStateV1Test extends APIV1TestCase {
     public function testShouldEmitGetRequest() {
         $this->mockResponseCallback(function ($method) {
@@ -13,14 +15,20 @@ class GetStateV1Test extends APIV1TestCase {
             ];
         });
 
-        ShipmentState::forShipment(100);
+        ShipmentState::forShipmentById(100);
     }
 
     public function testShouldRequestState() {
         $this->mockResponse(200, MockV1Responses::getShipmentStateBody());
 
-        $result = ShipmentState::forShipment(100);
+        $result = ShipmentState::forShipmentById(100);
 
         $this->assertInstanceOf(ShipmentState::class, $result);
+    }
+
+    public function testShouldThrowSupportException() {
+        $this->expectException(NotSupportedException::class);
+
+        ShipmentState::forShipment(Mocks::getTrunkrsNr());
     }
 }

@@ -12,15 +12,6 @@ class LabelTest extends SDKTestCase
         $this->assertFileExists($subject->getRealPath());
     }
 
-    public function testShouldNotLeaveBehindTempFile() {
-        $subject = new Label(ShipmentLabelType::PDF);
-        $filePath = $subject->getRealPath();
-
-        $subject = null;
-
-        $this->assertFileNotExists($filePath);
-    }
-
     public function testShouldReflectFormatType() {
         $zplLabel = new Label(ShipmentLabelType::ZPL);
         $pdfLabel = new Label(ShipmentLabelType::PDF);
