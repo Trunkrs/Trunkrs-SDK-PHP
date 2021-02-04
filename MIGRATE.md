@@ -66,7 +66,7 @@ $details->recipient = new \Trunkrs\SDK\Address();
 $shipments = \Trunkrs\SDK\Shipment::create($details);
 ```
 
-> **Note:** Both international shipping and the use of the feature codes is not available when using API version 1.
+> **Note:** International shipping, the use of the feature codes and the service level are not available when using API version 1.
 
 ### Finding a shipment
 
