@@ -62,10 +62,25 @@ class GeneralTest extends SDKTestCase {
         RequestHandler::get("shipments");
     }
 
-    public function testApiValidationMessageInException() {
+    public function testApiValidationMessageV1InException() {
+        Settings::setApiVersion(1);
         $message = uniqid();
         $this->mockResponse(422, [
             'message' => $message,
+        ]);
+
+        try {
+            RequestHandler::post("shipments", []);
+        } catch (ServerValidationException $exception) {
+            $this->assertEquals($message, $exception->getValidationMessage());
+        }
+    }
+
+    public function testApiValidationMessageV2InException() {
+        $message = uniqid();
+        Settings::setApiVersion(2);
+        $this->mockResponse(422, [
+            'reason' => $message,
         ]);
 
         try {

@@ -38,7 +38,7 @@ class Settings {
     /**
      * @var string The current version of the SDK.
      */
-    public static $sdkVersion = '2.0.0';
+    public static $sdkVersion = '2.0.1';
 
     /**
      * Sets the client credentials that will be used in subsequent requests.
