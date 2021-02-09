@@ -5,6 +5,7 @@ namespace Trunkrs\SDK;
 use Trunkrs\SDK\Exception\GeneralApiException;
 use Trunkrs\SDK\Exception\NotAuthorizedException;
 use Trunkrs\SDK\Exception\ServerValidationException;
+use Trunkrs\SDK\Util\NullStripper;
 
 class RequestHandler {
     private static $_httpClient;
@@ -103,7 +104,7 @@ class RequestHandler {
             "POST",
             self::createUrl($resource),
             self::createHeaders(!empty($body)),
-            $body
+            NullStripper::strip($body)
         );
 
         if (!self::isSuccessful($response)) {
@@ -127,7 +128,7 @@ class RequestHandler {
             "PUT",
             self::createUrl($resource),
             self::createHeaders(!empty($body)),
-            $body
+            NullStripper::strip($body)
         );
 
         if (!self::isSuccessful($response)) {
