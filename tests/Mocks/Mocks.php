@@ -243,8 +243,8 @@ class Mocks {
         $webhook = new Webhook();
         $webhook->id = self::getGenerator()->randomNumber();
         $webhook->callbackUrl = self::getGenerator()->url;
+        $webhook->sessionHeaderName = self::getGenerator()->slug;
         $webhook->sessionToken = uniqid();
-        $webhook->sessionHeaderName = uniqid();
         $webhook->event = $event ?? self::getGenerator()->randomElement([
             WebhookEvent::ON_CREATION,
             WebhookEvent::ON_CANCELLATION,

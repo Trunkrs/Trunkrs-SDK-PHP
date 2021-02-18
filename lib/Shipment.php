@@ -42,7 +42,7 @@ class Shipment {
      * Creates a new shipment for the specified shipment details.
      *
      * @param ShipmentDetails $shipment The details of the shipment.
-     * @return array The created shipments in an array as instance of Shipment.
+     * @return Shipment[] The created shipments in an array as instance of Shipment.
      * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws Exception\ServerValidationException When the request payload doesn't match the expectation of the API.
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
@@ -119,7 +119,7 @@ class Shipment {
      * Retrieves all shipments in a paginated fashion.
      *
      * @param int $page The optional page of shipments to retrieve.
-     * @return array An array of Shipment
+     * @return Shipment[] An array of Shipment
      * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
@@ -286,7 +286,12 @@ class Shipment {
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */
     public function getState(): ShipmentState {
-        return ShipmentState::forShipment($this->id);
+        switch (Settings::$apiVersion) {
+            case 1:
+                return ShipmentState::forShipmentById($this->id);
+            case 2:
+                return ShipmentState::forShipment($this->trunkrsNr);
+        }
     }
 
     /**

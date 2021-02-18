@@ -1,7 +1,7 @@
 <phpunit bootstrap="tests/bootstrap.php" colors="true">
     <testsuites>
-        <testsuite name="Trunkrs SDK unit tests">
-            <directory suffix="Test.php">tests/SDK</directory>
+        <testsuite name="Trunkrs SDK Integration Tests">
+            <directory suffix="Test.php">tests/Integration</directory>
         </testsuite>
     </testsuites>
     <filter>

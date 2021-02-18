@@ -11,7 +11,7 @@ class ServiceArea
 {
     private static function applyV2(ServiceArea $area, \stdClass $json) {
         $area->country = $json->country;
-        $area->region = $json->region;
+        $area->region = isset($json->region) ? $json->region : null;
     }
 
     /**
