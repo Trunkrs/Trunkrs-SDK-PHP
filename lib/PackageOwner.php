@@ -19,7 +19,7 @@ class PackageOwner {
         $owner->type = isset($json->type) ? $json->type : null;
         $owner->name = $json->name;
         $owner->addressLine = isset($json->address) ? $json->address : null;
-        $owner->postal = isset($json->postal) ? $json->postalCode : null;
+        $owner->postal = isset($json->postalCode) ? $json->postalCode : null;
         $owner->city = isset($json->city) ? $json->city : null;
         $owner->country = isset($json->country) ? $json->country : null;
     }

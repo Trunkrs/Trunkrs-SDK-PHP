@@ -3,6 +3,8 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Util\NullStripper;
+
 class ShipmentV2CreateTest extends APIV2TestCase
 {
     public function testShouldExecutePostRequest() {
@@ -45,7 +47,7 @@ class ShipmentV2CreateTest extends APIV2TestCase
         $details = Mocks::getFakeDetails();
 
         $this->mockResponseCallback(function ($method, $url, $headers, $params) use ($details, $featureCodes, $timeSlot, $state, $labelUrls, $serviceLevel, $trunkrsNr) {
-            $this->assertArraySubset([
+            $this->assertArraySubset(NullStripper::strip([
                 'sender' => [
                     'companyName' => $details->sender->companyName,
                     'name' => $details->sender->contactName,
@@ -107,7 +109,7 @@ class ShipmentV2CreateTest extends APIV2TestCase
                     'maxTimeOutsideFreezer' => $details->featureCodes->maxHoursOutsideFreezer,
                 ],
                 'service' => $details->service,
-            ], $params);
+            ]), $params);
 
             return [
                 "status" => 200,

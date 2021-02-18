@@ -21,6 +21,8 @@ jobs:
       run: composer install --prefer-dist
       
     - name: Run tests
+      env:
+        INTEGRATION_API_KEY: ${{ secrets.INTEGRATION_API_KEY }}
       run: |
         phpunit --configuration ./phpunit.dist.xml
         
