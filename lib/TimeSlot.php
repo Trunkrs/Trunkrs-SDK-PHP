@@ -32,7 +32,7 @@ class TimeSlot {
      *
      * @param string $postalCode The postal code for which to retrieve time slots.
      * @param string $country An optional country specifier.
-     * @return array An array of Timeslot instances.
+     * @return TimeSlot[] An array of Timeslot instances.
      * @throws Exception\NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws Exception\GeneralApiException When the API responds with an unexpected answer.
      */

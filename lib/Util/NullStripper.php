@@ -11,7 +11,7 @@ class NullStripper
             if (is_array($value)) {
                 $array[$key] = NullStripper::strip($value);
             } else if (is_null($value)) {
-                unset($key);
+                unset($array[$key]);
             }
         }
 

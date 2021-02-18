@@ -17,13 +17,13 @@ class Address implements SerializableInterface {
     }
 
     private static function applyV2(Address $address, $json) {
-        $address->companyName = $json->companyName;
+        $address->companyName = isset($json->companyName) ? $json->companyName : null;
         $address->contactName = $json->name;
         $address->addressLine = $json->address;
         $address->postal = $json->postalCode;
         $address->city = $json->city;
         $address->country = $json->country;
-        $address->phone = $json->phoneNumber;
+        $address->phone = isset($json->phoneNumber) ? $json->phoneNumber : null;
         $address->email = $json->emailAddress;
         $address->remarks = $json->additionalRemarks;
     }

@@ -24,7 +24,7 @@ class ShipmentState {
 
     private static function applyV2(ShipmentState $state, \stdClass $json) {
         $state->timestamp = JsonDateTime::from($json->timestamp);
-        $state->owner = new PackageOwner($json->currentOwner);
+        $state->owner = isset($json->currentOwner) ? new PackageOwner($json->currentOwner) : null;
         $state->state = new ShipmentLog($json);
     }
 
@@ -83,7 +83,7 @@ class ShipmentState {
     public $shipmentId;
 
     /**
-     * @var PackageOwner $owner The current owner of the package.
+     * @var PackageOwner|null $owner The current owner of the package.
      */
     public $owner;
 

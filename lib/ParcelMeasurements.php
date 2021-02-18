@@ -22,13 +22,25 @@ class ParcelMeasurements implements SerializableInterface {
     }
 
     private static function toV2Request(ParcelMeasurements $measurements) {
+        $hasSize = !is_null($measurements->width)
+            || !is_null($measurements->height)
+            || !is_null($measurements->depth);
+
         return [
             'weight' => $measurements->weight->serialize(),
-            'size' => [
-                'width' => $measurements->width->serialize(),
-                'height' => $measurements->height->serialize(),
-                'depth' => $measurements->depth->serialize(),
-            ]
+            'size' => $hasSize
+                ? [
+                    'width' => !is_null($measurements->width)
+                        ? $measurements->width->serialize()
+                        : null,
+                    'height' => !is_null($measurements->height)
+                        ? $measurements->height->serialize()
+                        : null,
+                    'depth' => !is_null($measurements->depth)
+                        ? $measurements->depth->serialize()
+                        : null,
+                ]
+                : null,
         ];
     }
 

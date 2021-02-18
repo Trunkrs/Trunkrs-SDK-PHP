@@ -11,12 +11,12 @@ use Trunkrs\SDK\Enum\ShipmentStatusLabel;
 class ShipmentLog {
     private static function applyV1(ShipmentLog $log, \stdClass $json) {
         $log->code = ShipmentStatusLabel::toShipmentStatus($json->label);
-        $log->reason = $json->reasonCode;
+        $log->reason = isset($json->reasonCode) ? $json->reasonCode : null;
     }
 
     private static function applyV2(ShipmentLog $log, \stdClass $json) {
         $log->code = $json->code;
-        $log->reason = $json->reasonCode;
+        $log->reason = isset($json->reasonCode) ? $json->reasonCode : null;
     }
 
     /**

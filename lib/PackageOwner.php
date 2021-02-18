@@ -16,12 +16,12 @@ class PackageOwner {
     }
 
     private static function applyV2(PackageOwner $owner, \stdClass $json) {
-        $owner->type = $json->type;
+        $owner->type = isset($json->type) ? $json->type : null;
         $owner->name = $json->name;
-        $owner->addressLine = $json->address;
-        $owner->postal = $json->postalCode;
-        $owner->city = $json->city;
-        $owner->country = $json->country;
+        $owner->addressLine = isset($json->address) ? $json->address : null;
+        $owner->postal = isset($json->postal) ? $json->postalCode : null;
+        $owner->city = isset($json->city) ? $json->city : null;
+        $owner->country = isset($json->country) ? $json->country : null;
     }
 
     /**

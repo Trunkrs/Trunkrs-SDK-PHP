@@ -37,7 +37,7 @@ class ShipmentDetails implements SerializableInterface {
             'parcel' => array_map(function ($parcel) {
                 return $parcel->serialize();
             }, $details->parcels),
-            'featureCodes' => $details->featureCodes->serialize(),
+            'featureCodes' => !is_null($details->featureCodes) ? $details->featureCodes->serialize() : null,
             'timeSlotId' => $details->timeSlotId,
             'service' => $details->service,
         ];

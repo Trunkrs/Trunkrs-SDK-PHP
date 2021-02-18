@@ -13,7 +13,7 @@ class GuzzleClient implements HttpClientInterface {
             || $method == 'PATCH';
     }
 
-    private static function handleResponse(ResponseInterface $response): array {
+    private static function handleResponse($response): array {
         $headers = array_map(function ($header) {
             return is_array($header)
                 ? join($header)
@@ -47,7 +47,7 @@ class GuzzleClient implements HttpClientInterface {
         $options = [
             'headers' => $headers,
         ];
-
+        
         if (self::hasRequestBody($comparableMethod)) {
             $options['json'] = $params;
         } else {

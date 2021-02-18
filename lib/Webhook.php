@@ -102,7 +102,7 @@ class Webhook implements SerializableInterface {
     /**
      * Retrieves all currently registered web hooks.
      *
-     * @return array An array of Webhook
+     * @return Webhook[] An array of Webhook
      * @throws Exception\GeneralApiException
      * @throws Exception\NotAuthorizedException
      */
@@ -160,18 +160,7 @@ class Webhook implements SerializableInterface {
      * @see WebhookEvent
      * @since 2.0.0
      */
-    public $uponLabelReady = true;
-
-    /**
-     * @var bool $uponStatusUpdate Enables updates when the shipment status changes.
-     */
-    public $uponStatusUpdate = true;
-
-    /**
-     * @var bool $uponShipmentCancellation Enables update when the shipment has been cancelled.
-     * @deprecated Please use the generic status update web hook instead. Only available when using the V1 API.
-     */
-    public $uponShipmentCancellation = true;
+    public $event;
 
     /**
      * @var \DateTime $createdAt The moment the web hook was created. Only available after creation of the web hook.

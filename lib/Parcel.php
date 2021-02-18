@@ -24,9 +24,9 @@ class Parcel implements SerializableInterface
         $details = [
             'reference' => $parcel->reference,
             'description' => $parcel->description,
-            'contents' => array_map(function ($contentItem) {
-                return $contentItem->serialize();
-            }, $parcel->contents),
+            'contents' => !is_null($parcel->contents)
+                ? array_map(function ($contentItem) { return $contentItem->serialize(); }, $parcel->contents)
+                : null,
         ];
 
         return array_merge($details, $measurements);

@@ -10,8 +10,9 @@ class FeatureCodes implements SerializableInterface
         $codes->noNeighbourDelivery = $json->noNeighbourDelivery;
         $codes->noSignature = $json->noSignature;
         $codes->deliverInMailBox = $json->deliverInMailBox;
-        $codes->maxDeliveryAttempts = $json->maxDeliveryAttempts;
-        $codes->maxHoursOutsideFreezer = $json->maxTimeOutsideFreezer;
+        $codes->maxDeliveryAttempts = isset($json->maxDeliveryAttempts) ? $json->maxDeliveryAttempts : null;
+        $codes->maxHoursOutsideFreezer = isset($json->maxTimeOutsideFreezer) ? $json->maxTimeOutsideFreezer : null;
+        $codes->requireStrictProofOfDelivery = isset($json->requireProofOfDelivery) ? $json->requireProofOfDelivery : false;
     }
 
     private static function toV2Request(FeatureCodes $codes): array {
@@ -21,6 +22,7 @@ class FeatureCodes implements SerializableInterface
             'deliverInMailBox' => $codes->deliverInMailBox,
             'maxDeliveryAttempts' => $codes->maxDeliveryAttempts,
             'maxTimeOutsideFreezer' => $codes->maxHoursOutsideFreezer,
+            'requireProofOfDelivery' => $codes->requireStrictProofOfDelivery,
         ];
     }
 
@@ -30,6 +32,12 @@ class FeatureCodes implements SerializableInterface
     public $noNeighbourDelivery = false;
 
     /**
+     * @note This setting involves extra costs. Please discuss with your Trunkrs account manager.
+     * @var boolean Sets whether strict proof of delivery is required for this shipment.
+     */
+    public $requireStrictProofOfDelivery = false;
+
+    /**
      * @var boolean Option to disable the signature requirement.
      */
     public $noSignature = false;
@@ -37,17 +45,19 @@ class FeatureCodes implements SerializableInterface
     /**
      * @var boolean Option to disable mailbox delivery for this shipment.
      */
-    public $deliverInMailBox = true;
+    public $deliverInMailBox = false;
 
     /**
+     * @note Only applicable for service level SAME_DAY_FROZEN_FOOD.
      * @var int Maximum delivery attempts for this shipment. The absolute maximum is 3 attempts.
      */
-    public $maxDeliveryAttempts = 3;
+    public $maxDeliveryAttempts = null;
 
     /**
+     * @note Only applicable for service level SAME_DAY_FROZEN_FOOD.
      * @var int The maximum number of hours the shipment is allowed to be outside the freezer. Only applicable for frozen food shipments.
      */
-    public $maxHoursOutsideFreezer = 15;
+    public $maxHoursOutsideFreezer = null;
 
     public function __construct($json = null) {
         if ($json) {
