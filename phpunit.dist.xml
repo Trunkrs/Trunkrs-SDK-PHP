@@ -3,9 +3,6 @@
         <testsuite name="Trunkrs SDK Test Suite">
             <directory suffix="Test.php">tests/SDK</directory>
         </testsuite>
-        <testsuite name="Trunkrs SDK Integration Tests">
-            <directory suffix="Test.php">tests/Integration</directory>
-        </testsuite>
     </testsuites>
     <filter>
         <whitelist>
