@@ -29,14 +29,8 @@ class ShipmentManagementTest extends IntegrationTestCase {
         $timeslot = TimeSlot::retrieve($recipient->postal)[0];
         $details->timeSlotId = $timeslot->id;
 
-        $dimensions = new ParcelMeasurements();
-        $dimensions->weight = new Measurement();
-        $dimensions->weight->value = 0;
-        $dimensions->weight->unit = MeasurementUnit::KILOGRAMS;
-
         $parcel = new Parcel();
         $parcel->reference = Mocks::getGenerator()->uuid;
-        $parcel->measurements = $dimensions;
         $details->parcels = [$parcel];
 
         $this->shipments = Shipment::create($details);

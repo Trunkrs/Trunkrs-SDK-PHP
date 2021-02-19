@@ -20,7 +20,10 @@ class Parcel implements SerializableInterface
     }
 
     private static function toV2Request(Parcel $parcel): array {
-        $measurements = $parcel->measurements->serialize();
+        $measurements = isset($parcel->measurements)
+            ? $parcel->measurements->serialize()
+            : [];
+
         $details = [
             'reference' => $parcel->reference,
             'description' => $parcel->description,
@@ -53,6 +56,8 @@ class Parcel implements SerializableInterface
     public $measurements;
 
     public function __construct($json = null) {
+        $this->measurements = new ParcelMeasurements();
+
         if ($json) {
             switch (Settings::$apiVersion) {
                 case 2:

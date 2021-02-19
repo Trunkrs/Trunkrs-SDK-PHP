@@ -2,6 +2,7 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Util\Defaults;
 use Trunkrs\SDK\Util\SerializableInterface;
 
 class ParcelMeasurements implements SerializableInterface {
@@ -65,6 +66,8 @@ class ParcelMeasurements implements SerializableInterface {
     public $weight;
 
     public function __construct($json = null) {
+        $this->weight = Defaults::getDefaultWeight();
+
         if ($json) {
             switch (Settings::$apiVersion) {
                 case 2:
