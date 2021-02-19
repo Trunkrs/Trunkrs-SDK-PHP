@@ -32,6 +32,7 @@ class Shipment {
             return new Parcel($parcelJson);
         }, $json->parcels);
 
+        $shipment->label = new LabelUrls($json->label);
         $shipment->timeSlot = new TimeSlot($json->timeSlot);
         $shipment->state = new ShipmentState($json->state);
         $shipment->featureCodes = new FeatureCodes($json->featureCodes);
