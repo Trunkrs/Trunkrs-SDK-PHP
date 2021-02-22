@@ -11,6 +11,10 @@ class RequestHandler {
     private static $_httpClient;
 
     private static function createUrl(string $resource): string {
+        if (str_starts_with($resource, 'http')) {
+            return $resource;
+        }
+
         return sprintf("%s/v%d/%s", Settings::$baseUrl, Settings::$apiVersion, ltrim($resource, "/"));
     }
 
@@ -163,10 +167,10 @@ class RequestHandler {
     /**
      * Executes a GET request and downloads the contents into the specified file.
      * @param string $resource The resource to execute get on.
-     * @param string $fileName
-     * @return void
-     * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
+     * @param string $fileName The name of the file to download to.
      * @throws GeneralApiException When the API responds with an unexpected answer.
+     * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
+     * @throws ServerValidationException
      */
     public static function downloadGet(string $resource, string $fileName) {
         $response = self::getClient()->download(
@@ -184,7 +188,7 @@ class RequestHandler {
     /**
      * Executes a PUT request with the specified body and downloads the contents into the specified file.
      * @param string $resource The resource to execute delete on.
-     * @param string $fileName The file name the download the result into.
+     * @param string $fileName The name of the file to download to.
      * @param array $body A optional associative array as the request body.
      * @return void
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.

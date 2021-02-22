@@ -81,10 +81,10 @@ class ShipmentManagementTest extends IntegrationTestCase {
         $this->shipments = Shipment::create($details);
 
         $this->assertCount(4, $this->shipments);
-        $this->assertEquals($parcel1->reference, $this->shipments[0]->parcels[0]->reference);
-        $this->assertEquals($parcel2->reference, $this->shipments[1]->parcels[0]->reference);
-        $this->assertEquals($parcel3->reference, $this->shipments[2]->parcels[0]->reference);
-        $this->assertEquals($parcel4->reference, $this->shipments[3]->parcels[0]->reference);
+        $this->assertStringEndsWith($parcel1->reference, $this->shipments[0]->parcels[0]->reference);
+        $this->assertStringEndsWith($parcel2->reference, $this->shipments[1]->parcels[0]->reference);
+        $this->assertStringEndsWith($parcel3->reference, $this->shipments[2]->parcels[0]->reference);
+        $this->assertStringEndsWith($parcel4->reference, $this->shipments[3]->parcels[0]->reference);
     }
 
     protected function tearDown()

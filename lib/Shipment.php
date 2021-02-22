@@ -297,11 +297,17 @@ class Shipment {
 
     /**
      * Downloads the label file in the specified format.
+     * @deprecated As of API version 2, please use download on the label property instead.
      * @param string $type The label format type. Either pdf or zpl.
+     * @see LabelUrls::download()
      * @see Trunkrs\SDK\Enum\ShipmentLabelType
      * @return Label The label wrapper class.
      */
     public function downloadLabel(string $type): Label {
+        if (Settings::$apiVersion == 2) {
+            throw new NotSupportedException("Please use the download feature on the labels instead.");
+        }
+
         return Label::download(
             $type,
             $this->trunkrsNr,

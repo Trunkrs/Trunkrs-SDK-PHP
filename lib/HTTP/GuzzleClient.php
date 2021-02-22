@@ -4,7 +4,6 @@ namespace Trunkrs\SDK\HTTP;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\ResponseInterface;
 
 class GuzzleClient implements HttpClientInterface {
     private static function hasRequestBody($method): bool {
@@ -14,6 +13,10 @@ class GuzzleClient implements HttpClientInterface {
     }
 
     private static function handleResponse($response): array {
+        if ($response == null) {
+            return [];
+        }
+
         $headers = array_map(function ($header) {
             return is_array($header)
                 ? join($header)
@@ -64,7 +67,7 @@ class GuzzleClient implements HttpClientInterface {
 
     public function download(string $method, string $url, string $fileName, array $headers = [], array $params = []): array {
         $comparableMethod = strtoupper($method);
-        $stream = fopen($fileName, 'w');
+        $stream = fopen($fileName, 'r+');
 
         $options = [
             'headers' => $headers,
