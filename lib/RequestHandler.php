@@ -11,7 +11,7 @@ class RequestHandler {
     private static $_httpClient;
 
     private static function createUrl(string $resource): string {
-        if (str_starts_with($resource, 'http')) {
+        if (substr($resource,0 , 4) === "http") {
             return $resource;
         }
 
