@@ -2,10 +2,11 @@
 
 namespace Trunkrs\SDK;
 
+use Trunkrs\SDK\Enum\ShipmentLabelSize;
 use Trunkrs\SDK\Enum\ShipmentLabelType;
 use Trunkrs\SDK\Exception\NotSupportedException;
 
-class LabelV1DownloadBatchTest extends APIV1TestCase {
+class LabelV2DownloadBatchTest extends APIV2TestCase {
     public function testShouldExecuteAPutRequestForPDF() {
         $this->mockDownloadCallback(function ($method) {
             $this->assertEquals("PUT", $method);
@@ -18,7 +19,8 @@ class LabelV1DownloadBatchTest extends APIV1TestCase {
         ]);
     }
 
-    public function testShouldPassTrunkrsNrsInBody() {
+    public function testShouldPassTrunkrsNrsAndSizeInBody() {
+        $size = ShipmentLabelSize::A4;
         $trunkrsNrs = [
             Mocks::getTrunkrsNr(),
             Mocks::getTrunkrsNr(),
@@ -26,12 +28,13 @@ class LabelV1DownloadBatchTest extends APIV1TestCase {
             Mocks::getTrunkrsNr(),
         ];
 
-        $this->mockDownloadCallback(function ($method, $url, $filename, $headers, $params) use ($trunkrsNrs) {
+        $this->mockDownloadCallback(function ($method, $url, $filename, $headers, $params) use ($trunkrsNrs, $size) {
             $this->assertEquals($trunkrsNrs, $params['trunkrsNrs']);
+            $this->assertEquals($size, $params['size']);
             return ["status" => 200];
         });
 
-        Label::downloadBatch(ShipmentLabelType::PDF, "cool-label.pdf", $trunkrsNrs);
+        Label::downloadBatch(ShipmentLabelType::PDF, "cool-label.pdf", $trunkrsNrs, $size);
     }
 
     public function testShouldThrowWhenFormatZPL() {
