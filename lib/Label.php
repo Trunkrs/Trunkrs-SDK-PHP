@@ -9,7 +9,6 @@ use Trunkrs\SDK\Exception\NotSupportedException;
 
 /**
  * Wrapper around Label data.
- * @deprecated As of API version 2, the shipment has both ZPL and PDF label urls.
  * @package Trunkrs\SDK
  * @see \SplFileObject
  */
@@ -30,6 +29,7 @@ class Label extends \SplFileObject {
      * @return Label The label in a SplFileObject wrapper.
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws GeneralApiException When the API responds with an unexpected answer.
+     * @deprecated As of API version 2, the shipment has both ZPL and PDF label urls.
      * @see Trunkrs\SDK\Enum\ShipmentLabelType
      * @see \SplFileObject
      */
@@ -38,6 +38,10 @@ class Label extends \SplFileObject {
         string $trunkrsNr,
         string $postalCode
     ): Label {
+        if (Settings::$apiVersion > 1) {
+            throw new NotSupportedException("The use of this functionality is not supported in API version 2.");
+        }
+
         try {
             $label = new Label($type);
             $tmpFilename = $label->getRealPath();
@@ -59,33 +63,48 @@ class Label extends \SplFileObject {
     /**
      * Downloads a single file containing all specified shipment labels. Only PDF is supported at this moment.s
      * @param string $type The label format type. Only PDf is supported at this moment.
+     * @param string $filename The filename to download the labels to.
      * @param array $trunkrsNrs The Trunkrs numbers of the shipments to create the label for.
-     * @return Label
+     * @param string $size The optional size specifier for the labels.
+     * @return void
      * @throws NotAuthorizedException When the credentials are invalid, not set or expired.
      * @throws GeneralApiException When the API responds with an unexpected answer.
      * @throws NotSupportedException Thrown when trying to create batched ZPL labels.
      * @see Trunkrs\SDK\Enum\ShipmentLabelType
-     * @see \SplFileObject
+     * @see Trunkrs\SDK\Enum\ShipmentLabelSize
      */
     public static function downloadBatch(
         string $type,
-        array $trunkrsNrs
-    ): Label {
+        string $filename,
+        array $trunkrsNrs,
+        string $size = null
+    ) {
         try {
-            $label = new Label($type);
-            $tmpFilename = $label->getRealPath();
 
             if ($type == ShipmentLabelType::ZPL) {
                 throw new NotSupportedException('Batching ZPL labels is not supported at this moment.');
             }
 
-            RequestHandler::downloadPut(
-                'shipments/labels',
-                $tmpFilename,
-                ['trunkrsNrs' => $trunkrsNrs]
-            );
-
-            return $label;
+            switch (Settings::$apiVersion) {
+                case 1:
+                    RequestHandler::downloadPut(
+                        'shipments/labels',
+                        $filename,
+                        ['trunkrsNrs' => $trunkrsNrs]
+                    );
+                    break;
+                case 2:
+                    $sizeParam = is_null($size) ? [] : ['size' => $size];
+                    RequestHandler::downloadPut(
+                        sprintf('shipments/labels/%s', $type),
+                        $filename,
+                        array_merge(
+                            ['trunkrsNrs' => $trunkrsNrs],
+                            $sizeParam
+                        )
+                    );
+                    break;
+            }
         } catch (\Exception $exception) {
             $label = null;
             throw $exception;
